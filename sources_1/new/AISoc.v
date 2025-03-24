@@ -50,13 +50,13 @@ module AISoc(
 	parameter [ 0:0] REGS_INIT_ZERO = 1;
 	parameter [31:0] MASKED_IRQ = 32'h 0000_0000;
 	parameter [31:0] LATCHED_IRQ = 32'h ffff_ffff;
-	parameter [31:0] PROGADDR_RESET = 32'h 0000_0000;
+	parameter [31:0] PROGADDR_RESET = 32'h 0100_0000;
 	parameter [31:0] PROGADDR_IRQ = 32'h 0000_0010;
-	parameter [31:0] STACKADDR = 32'h 0008_2000;
+	parameter [31:0] STACKADDR = 32'h 00FF_FFFE;
 
     //config imem and dmem
-    parameter I_MEM_SIZE = 458752; // 448KB ROM
-    parameter D_MEM_SIZE = 532480; // 520KB SRAM
+    parameter I_MEM_SIZE = 16384; // 16KB ROM
+    parameter D_MEM_SIZE = 16384; // 16KB SRAM
     parameter ADDR_WIDTH = 32;
     parameter DATA_WIDTH = 32;
 
@@ -74,27 +74,31 @@ module AISoc(
     wire        cpu_rvalid, cpu_rready;
     wire [31:0] cpu_rdata;
 
+    // address line 
+    wire [31:0] s_mem_awaddr;
+    wire [31:0] s_mem_araddr;
+
     // // AXI signals to imem_axi_lite
-    // wire        imem_arvalid, imem_arready;
-    // wire [31:0] imem_araddr;
-    // wire [ 2:0] imem_arprot;
-    // wire        imem_rvalid, imem_rready;
-    // wire [31:0] imem_rdata;
+    wire        imem_arvalid, imem_arready;
+    //wire [31:0] imem_araddr;
+    wire [ 2:0] imem_arprot;
+    wire        imem_rvalid, imem_rready;
+    wire [31:0] imem_rdata;
     
 
-    // // AXI signals to dmem_axi_lite
-    // wire        dmem_awvalid, dmem_awready;
-    // wire [31:0] dmem_awaddr;
-    // wire [ 2:0] dmem_awprot;
-    // wire        dmem_wvalid, dmem_wready;
-    // wire [31:0] dmem_wdata;
-    // wire [ 3:0] dmem_wstrb;
-    // wire        dmem_bvalid, dmem_bready;
-    // wire        dmem_arvalid, dmem_arready;
-    // wire [31:0] dmem_araddr;
-    // wire [ 2:0] dmem_arprot;
-    // wire        dmem_rvalid, dmem_rready;
-    // wire [31:0] dmem_rdata;
+    // AXI signals to dmem_axi_lite
+    wire        dmem_awvalid, dmem_awready;
+    //wire [31:0] dmem_awaddr;
+    wire [ 2:0] dmem_awprot;
+    wire        dmem_wvalid, dmem_wready;
+    wire [31:0] dmem_wdata;
+    wire [ 3:0] dmem_wstrb;
+    wire        dmem_bvalid, dmem_bready;
+    wire        dmem_arvalid, dmem_arready;
+    wire [31:0] dmem_araddr;
+    wire [ 2:0] dmem_arprot;
+    wire        dmem_rvalid, dmem_rready;
+    wire [31:0] dmem_rdata;
 
     // Instantiate picorv32_axi
     picorv32_axi #(
@@ -149,43 +153,98 @@ module AISoc(
     );
 
 
-    // // Instantiate imem_axi_lite
-    // imem_axi_lite #(
-    //     .MEM_SIZE(16384) // 16KB
-    // ) imem_cpu (
-    //     .clk(clk),
-    //     .resetn(resetn),
-    //     .i_axi_arvalid(cpu_arvalid),
-    //     .o_axi_arready(cpu_arready),  
-    //     .i_axi_araddr(cpu_araddr),
-    //     .o_axi_rvalid(cpu_rvalid),   
-    //     .i_axi_rready(cpu_rready),
-    //     .o_axi_rdata(cpu_rdata)    
-    // );
+    // Instantiate axi lite interconnect
+    // Instantiate axi_lite_interconnect
+    axi_lite_interconnect #(
+        .NUM_SLAVES(2),
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) interconnect (
+        .clk(clk),
+        .reset_n(resetn),
+        // Master Interface (to CPU)
+        .i_m_axi_awvalid(cpu_awvalid),
+        .o_m_axi_awready(cpu_awready),
+        .i_m_axi_awaddr(cpu_awaddr),
+        .i_m_axi_awprot(cpu_awprot),
+        .i_m_axi_wvalid(cpu_wvalid),
+        .o_m_axi_wready(cpu_wready),
+        .i_m_axi_wdata(cpu_wdata),
+        .i_m_axi_wstrb(cpu_wstrb),
+        .o_m_axi_bvalid(cpu_bvalid),
+        .i_m_axi_bready(cpu_bready),
+        .i_m_axi_arvalid(cpu_arvalid),
+        .o_m_axi_arready(cpu_arready),
+        .i_m_axi_araddr(cpu_araddr),
+        .i_m_axi_arprot(cpu_arprot),
+        .o_m_axi_rvalid(cpu_rvalid),
+        .i_m_axi_rready(cpu_rready),
+        .o_m_axi_rdata(cpu_rdata),
 
-    // Instantiate dmem_axi_lite
+        // Slave Interfaces [0: dmem, 1: imem]
+        .o_s_axi_awaddr(s_mem_awaddr),
+        .o_s_axi_awvalid({imem_awvalid, dmem_awvalid}),
+        .i_s_axi_awready({imem_awready, dmem_awready}),
+        .o_s_axi_awprot({imem_awprot, dmem_awprot}),
+        .o_s_axi_wdata({imem_wdata, dmem_wdata}),
+        .o_s_axi_wstrb({imem_wstrb, dmem_wstrb}),
+        .o_s_axi_wvalid({imem_wvalid, dmem_wvalid}),
+        .i_s_axi_wready({imem_wready, dmem_wready}),
+        .i_s_axi_bvalid({imem_bvalid, dmem_bvalid}),
+        .o_s_axi_bready({imem_bready, dmem_bready}),
+        .o_s_axi_araddr(s_mem_araddr),
+        .o_s_axi_arvalid({imem_arvalid, dmem_arvalid}),
+        .i_s_axi_arready({imem_arready, dmem_arready}),
+        .o_s_axi_arprot({imem_arprot, dmem_arprot}),
+        .i_s_axi_rdata({imem_rdata, dmem_rdata}),
+        .i_s_axi_rvalid({imem_rvalid, dmem_rvalid}),
+        .o_s_axi_rready({imem_rready, dmem_rready})
+    );
+
+
+
+
+    // Instantiate dmem_axi_lite (Slave 0)
     dmem_axi_lite #(
-        .MEM_SIZE(D_MEM_SIZE), // 4KB
+        .MEM_SIZE(D_MEM_SIZE), // 520 kB
         .ADDR_WIDTH(ADDR_WIDTH),
         .DATA_WIDTH(DATA_WIDTH)
     ) dmem_cpu (
         .clk(clk),
         .resetn(resetn),
-        .i_axi_awvalid(cpu_awvalid),
-        .o_axi_awready(cpu_awready),
-        .i_axi_awaddr(cpu_awaddr),
-        .i_axi_wvalid(cpu_wvalid),
-        .o_axi_wready(cpu_wready),
-        .i_axi_wdata(cpu_wdata),
-        .i_axi_wstrb(cpu_wstrb),
-        .o_axi_bvalid(cpu_bvalid),
-        .i_axi_bready(cpu_bready),
-        .i_axi_arvalid(cpu_arvalid),
-        .o_axi_arready(cpu_arready),
-        .i_axi_araddr(cpu_araddr),
-        .o_axi_rvalid(cpu_rvalid),
-        .i_axi_rready(cpu_rready),
-        .o_axi_rdata(cpu_rdata)
+        .i_axi_awvalid(dmem_awvalid),
+        .o_axi_awready(dmem_awready),
+        .i_axi_awaddr(s_mem_awaddr),
+        .i_axi_wvalid(dmem_wvalid),
+        .o_axi_wready(dmem_wready),
+        .i_axi_wdata(dmem_wdata),
+        .i_axi_wstrb(dmem_wstrb),
+        .o_axi_bvalid(dmem_bvalid),
+        .i_axi_bready(dmem_bready),
+        .i_axi_arvalid(dmem_arvalid),
+        .o_axi_arready(dmem_arready),
+        .i_axi_araddr(s_mem_araddr),
+        .o_axi_rvalid(dmem_rvalid),
+        .i_axi_rready(dmem_rready),
+        .o_axi_rdata(dmem_rdata)
+    );
+
+    // Instantiate imem_axi_lite (Slave 1, read-only)
+    imem_axi_lite #(
+        .MEM_SIZE(I_MEM_SIZE), // 448 kB
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH),
+        .PROGADDR_RESET(PROGADDR_RESET)
+    ) imem_cpu (
+        .clk(clk),
+        .resetn(resetn),
+        // Read-only (imem không cần write channels)
+        .i_axi_arvalid(imem_arvalid),
+        .o_axi_arready(imem_arready),
+        .i_axi_araddr(s_mem_araddr),
+        .o_axi_rvalid(imem_rvalid),
+        .i_axi_rready(imem_rready),
+        .o_axi_rdata(imem_rdata)
     );
 
 endmodule

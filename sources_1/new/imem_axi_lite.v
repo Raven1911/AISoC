@@ -23,7 +23,8 @@
 module imem_axi_lite#(
     parameter MEM_SIZE = 16384, //16KB
     parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32
+    parameter DATA_WIDTH = 32,
+    parameter PROGADDR_RESET = 32'h 0000_0000
 )(
     input clk,
     input resetn,
@@ -92,10 +93,11 @@ module imem_axi_lite#(
     imem #(
         .MEM_SIZE(MEM_SIZE),
         .ADDR_WIDTH(ADDR_WIDTH),
-        .DATA_WIDTH(DATA_WIDTH)
+        .DATA_WIDTH(DATA_WIDTH),
+        .PROGADDR_RESET(PROGADDR_RESET)
     ) imem_unit (
         .clk(clk),
-        .addr_r(addr_r >> 2), // Word-aligned address (ignore lower 2 bits)
+        .addr_r(addr_r), // Word-aligned address (ignore lower 2 bits)
         .dout(dout)
     );
 
@@ -108,7 +110,7 @@ module imem #(
     parameter MEM_SIZE = 'd16384, // 16KB (16384 bytes / 4 = 4096 words)
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32,
-    parameter PROGADDR_RESET = 32'h 0000_0000;
+    parameter PROGADDR_RESET = 32'h 0000_0000
 )(
     input clk,
     input [ADDR_WIDTH-1:0] addr_r,
@@ -121,7 +123,7 @@ module imem #(
     initial $readmemh("firmware.hex", imem);
 
     always @(posedge clk) begin
-        dout <= imem[(addr_r - PROGADDR_RESET) >> 2]; // map address, Đọc dữ liệu từ địa chỉ addr_r
+        dout <= imem[(addr_r - PROGADDR_RESET) >> 2]; // Address map, Đọc dữ liệu từ địa chỉ addr_r 
     end
 
 endmodule
