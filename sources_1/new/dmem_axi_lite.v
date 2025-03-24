@@ -21,7 +21,7 @@
 
 
 module dmem_axi_lite #(
-    parameter MEM_SIZE = 1024, // 16KB
+    parameter MEM_SIZE = 532480, // 520KB
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32
 )(  
@@ -173,8 +173,8 @@ module dmem_axi_lite #(
     ) dmem_unit(
         .clk(clk),
         .wen(wen),
-        .addr_r(addr_r >> 2), // Word-aligned address (ignore lower 2 bits)
-        .addr_w(addr_w >> 2), // Word-aligned address (ignore lower 2 bits)
+        .addr_r(addr_r), // Word-aligned address (ignore lower 2 bits)
+        .addr_w(addr_w), // Word-aligned address (ignore lower 2 bits)
         .din(din),
         .dout(dout)
     );
@@ -185,7 +185,7 @@ endmodule
 
 
 module dmem #(
-    parameter MEM_SIZE = 1024, // 16KB
+    parameter MEM_SIZE = 532480, // 520KB
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32
 
@@ -198,15 +198,15 @@ module dmem #(
     );
 
     //big endian
-    reg [DATA_WIDTH-1:0] dmem [0:MEM_SIZE-1];
-    initial $readmemh("firmware.hex", dmem);
+    reg [DATA_WIDTH-1:0] dmem [0:(MEM_SIZE >> 2) - 1];
+    //initial $readmemh("firmware.hex", dmem);
 
     always @(posedge clk) begin
-        dout <= dmem[addr_r];
-        if (wen[0]) dmem[addr_w][ 7: 0] <= din[ 7: 0];
-		if (wen[1]) dmem[addr_w][15: 8] <= din[15: 8];
-		if (wen[2]) dmem[addr_w][23:16] <= din[23:16];
-		if (wen[3]) dmem[addr_w][31:24] <= din[31:24];
+        dout <= dmem[addr_r >> 2];
+        if (wen[0]) dmem[addr_w >> 2][ 7: 0] <= din[ 7: 0];
+		if (wen[1]) dmem[addr_w >> 2][15: 8] <= din[15: 8];
+		if (wen[2]) dmem[addr_w >> 2][23:16] <= din[23:16];
+		if (wen[3]) dmem[addr_w >> 2][31:24] <= din[31:24];
         
     end
 

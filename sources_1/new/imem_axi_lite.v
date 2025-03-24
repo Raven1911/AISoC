@@ -41,8 +41,8 @@ module imem_axi_lite#(
     );
 
     //define state
-    localparam R_IDLE = 2'b00;
-    localparam R_DATA = 2'b01;
+    localparam R_ADDRESS   = 2'b00;
+    localparam R_READ      = 2'b01;
 
     reg [1:0] R_state;
 
@@ -51,41 +51,42 @@ module imem_axi_lite#(
     wire [DATA_WIDTH-1:0]   dout;
 
     // Read Channel FSM
-    always @(posedge clk or negedge resetn) begin
-        if(~resetn) begin
-          o_axi_arready <= 0;
-          o_axi_rvalid  <= 0;
-          o_axi_rdata   <= 0;
+   always @(posedge clk or negedge resetn) begin
+        if (~resetn) begin
+            o_axi_arready   <= 0;
+            o_axi_rvalid    <= 0;
+            o_axi_rdata     <= 0;
+            R_state         <= R_ADDRESS;
+            addr_r          <= 0;
 
-          R_state       <= R_IDLE;
-          addr_r        <= 0;
         end
 
         else begin
-          case (R_state)
-            R_IDLE: begin
-                if (i_axi_arvalid) begin
-                    o_axi_arready   <= 1;
-                    addr_r          <= i_axi_araddr; // luu dia chi doc
-                    R_state         <= R_DATA;
-                end
-              
-            end
-            R_DATA: begin
-                o_axi_arready   <= 0;
-                o_axi_rvalid    <= 1;
-                o_axi_rdata     <= dout; // lay du lieu tu imem
-
-                if (i_axi_rready) begin
+            case (R_state)
+                R_ADDRESS: begin
                     o_axi_rvalid    <= 0;
-                    R_state         <= R_IDLE;
+                    if(i_axi_arvalid) begin
+                        o_axi_arready   <= 1;
+                        addr_r          <= i_axi_araddr; //luu dia chi doc
+                        R_state         <= R_READ;
+                    end
                 end
-            end
-            default: R_state <= R_IDLE;
 
-          endcase
+                R_READ: begin
+                    o_axi_arready   <= 0;
+                    if (i_axi_rready) begin
+                        o_axi_rvalid    <= 1;
+                        o_axi_rdata     <= dout;
+                        R_state         <= R_ADDRESS;
+                    end
+                end
+
+                default: R_state <= R_ADDRESS;
+            endcase
+
         end
-        
+
+
     end
 
     imem #(
@@ -94,7 +95,7 @@ module imem_axi_lite#(
         .DATA_WIDTH(DATA_WIDTH)
     ) imem_unit (
         .clk(clk),
-        .addr_r(addr_r), // Word-aligned address (ignore lower 2 bits)
+        .addr_r(addr_r >> 2), // Word-aligned address (ignore lower 2 bits)
         .dout(dout)
     );
 
@@ -104,22 +105,23 @@ endmodule
 
 
 module imem #(
-    parameter MEM_SIZE = 16384, // 16KB (16384 bytes / 4 = 4096 words)
+    parameter MEM_SIZE = 'd16384, // 16KB (16384 bytes / 4 = 4096 words)
     parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32
+    parameter DATA_WIDTH = 32,
+    parameter PROGADDR_RESET = 32'h 0000_0000;
 )(
     input clk,
     input [ADDR_WIDTH-1:0] addr_r,
     output reg [DATA_WIDTH-1:0] dout
 );
 
-    reg [DATA_WIDTH-1:0] imem [0:MEM_SIZE-1];
+    reg [DATA_WIDTH-1:0] imem [0:(MEM_SIZE >> 2) - 1];
 
     // Initialize memory from a hex file
     initial $readmemh("firmware.hex", imem);
 
     always @(posedge clk) begin
-        dout <= imem[addr_r]; // Đọc dữ liệu từ địa chỉ addr_r
+        dout <= imem[(addr_r - PROGADDR_RESET) >> 2]; // map address, Đọc dữ liệu từ địa chỉ addr_r
     end
 
 endmodule

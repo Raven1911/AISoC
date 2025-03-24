@@ -52,7 +52,13 @@ module AISoc(
 	parameter [31:0] LATCHED_IRQ = 32'h ffff_ffff;
 	parameter [31:0] PROGADDR_RESET = 32'h 0000_0000;
 	parameter [31:0] PROGADDR_IRQ = 32'h 0000_0010;
-	parameter [31:0] STACKADDR = 32'h 0000_0400;
+	parameter [31:0] STACKADDR = 32'h 0008_2000;
+
+    //config imem and dmem
+    parameter I_MEM_SIZE = 458752; // 448KB ROM
+    parameter D_MEM_SIZE = 532480; // 520KB SRAM
+    parameter ADDR_WIDTH = 32;
+    parameter DATA_WIDTH = 32;
 
     // AXI signals from picorv32_axi
     wire        cpu_awvalid, cpu_awready;
@@ -159,7 +165,9 @@ module AISoc(
 
     // Instantiate dmem_axi_lite
     dmem_axi_lite #(
-        .MEM_SIZE(1024) // 4KB
+        .MEM_SIZE(D_MEM_SIZE), // 4KB
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH)
     ) dmem_cpu (
         .clk(clk),
         .resetn(resetn),
