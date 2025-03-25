@@ -52,7 +52,7 @@ module AISoc(
 	parameter [31:0] LATCHED_IRQ = 32'h ffff_ffff;
 	parameter [31:0] PROGADDR_RESET = 32'h 0100_0000;
 	parameter [31:0] PROGADDR_IRQ = 32'h 0000_0010;
-	parameter [31:0] STACKADDR = 32'h 00FF_FFFE;
+	parameter [31:0] STACKADDR = 32'h 0040_0000;
 
     //config imem and dmem
     parameter I_MEM_SIZE = 16384; // 16KB ROM
