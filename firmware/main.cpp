@@ -1,17 +1,13 @@
-
-int z = 0;
-void loop();
+#define DMEM_BASE 0x2000
 
 int main() {
-    while (z < 50)
-    {
-        /* code */
-        loop();
-    }
-    return 0;
-    
-}
+    int a = 15;
+    int b = 25;
+    int value = a + b;  // 15 + 25 = 40
 
-void loop(){
-    z += 1;
+    volatile unsigned int* dmem = (volatile unsigned int*)DMEM_BASE;
+    *dmem = value;  // Lưu 40 vào 0x2000
+
+    while (1) {}
+    return 0;
 }

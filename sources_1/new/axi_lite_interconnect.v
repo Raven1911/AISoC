@@ -155,13 +155,13 @@ module axi_lite_decoder #(
     parameter NUM_SLAVES = 2,
     parameter ADDR_WIDTH = 32
 )(
-    input  [ADDR_WIDTH-1:0] i_axi_awaddr,      // Input Write Address
-    input  [ADDR_WIDTH-1:0] i_axi_araddr,      // Input Read Address
-    input                   i_axi_awvalid,     // Input Write Address Valid
-    input                   i_axi_wvalid,
-    input                   i_axi_bready,
-    input                   i_axi_arvalid,     // Input Read Address Valid
-    input                   i_axi_rready,
+    input  [ADDR_WIDTH-1:0]     i_axi_awaddr,      // Input Write Address
+    input  [ADDR_WIDTH-1:0]     i_axi_araddr,      // Input Read Address
+    input                       i_axi_awvalid,     // Input Write Address Valid
+    input                       i_axi_wvalid,
+    input                       i_axi_bready,
+    input                       i_axi_arvalid,     // Input Read Address Valid
+    input                       i_axi_rready,
     output reg [NUM_SLAVES-1:0] o_slave_select_write,  // Output Slave Select for Write
     output reg [NUM_SLAVES-1:0] o_slave_select_write_data,
     output reg [NUM_SLAVES-1:0] o_slave_select_write_bresp,
@@ -277,10 +277,10 @@ module axi_lite_mux #(
     assign o_s_axi_wvalid = i_slave_select_write_data[0] ? {1'b0,i_m_axi_wvalid} :
                             i_slave_select_write_data[1] ? {i_m_axi_wvalid,1'b0} : 0;
 
-    assign o_s_axi_wdata[0] = (i_s_axi_wready[0]) ? i_m_axi_wdata : 0;
-    assign o_s_axi_wdata[1] = (i_s_axi_wready[1]) ? i_m_axi_wdata : 0;
-    assign o_s_axi_wstrb[0] = (i_s_axi_wready[0]) ? i_m_axi_wstrb : 0;
-    assign o_s_axi_wstrb[1] = (i_s_axi_wready[1]) ? i_m_axi_wstrb : 0;
+    assign o_s_axi_wdata[0] = (i_slave_select_write_data[0]) ? i_m_axi_wdata : 0;
+    assign o_s_axi_wdata[1] = (i_slave_select_write_data[1]) ? i_m_axi_wdata : 0;
+    assign o_s_axi_wstrb[0] = (i_slave_select_write_data[0]) ? i_m_axi_wstrb : 0;
+    assign o_s_axi_wstrb[1] = (i_slave_select_write_data[1]) ? i_m_axi_wstrb : 0;
     
     assign o_m_axi_wready = i_slave_select_write_data[0] ? i_s_axi_wready[0] : 
                             i_slave_select_write_data[1] ? i_s_axi_wready[1] : 0;

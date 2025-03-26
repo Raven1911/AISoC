@@ -1,7 +1,7 @@
 OUTPUT_FORMAT("elf32-littleriscv") /* Đảm bảo file ELF là little-endian */
 
 MEMORY {
-    SRAM : ORIGIN = 0x00000000, LENGTH = 0x00FFFFFE /*  x * 1024 byte SRAM */
+    SRAM : ORIGIN = 0x00000000, LENGTH = 0x00004000 /*  x * 1024 byte SRAM */
 }
 
 SECTIONS {

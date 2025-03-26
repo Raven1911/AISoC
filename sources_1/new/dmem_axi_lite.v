@@ -70,7 +70,8 @@ module dmem_axi_lite #(
 
     //signals to connect to dmem
     reg [3:0] wen;
-    reg [ADDR_WIDTH-1:0] addr_r, addr_w;
+    reg [ADDR_WIDTH-1:0] addr_w;
+    wire [ADDR_WIDTH-1:0] addr_r;                
     reg [DATA_WIDTH-1:0] din;
     wire [DATA_WIDTH-1:0] dout;
 
@@ -125,41 +126,41 @@ module dmem_axi_lite #(
     end
 
 
-    //read channel FSM
+    assign addr_r = i_axi_araddr; //luu dia chi doc
+    // Read Channel FSM
     always @(posedge clk or negedge resetn) begin
-        if (~resetn) begin
-            o_axi_arready   <= 0;
-            o_axi_rvalid    <= 0;
-            o_axi_rdata     <= 0;
-            R_state         <= R_ADDRESS;
-            addr_r          <= 0;
+            if (~resetn) begin
+                o_axi_arready   <= 0;
+                o_axi_rvalid    <= 0;
+                o_axi_rdata     <= 0;
+                R_state         <= R_ADDRESS;
+                //addr_r          <= 0;
+            end
 
-        end
-
-        else begin
-            case (R_state)
-                R_ADDRESS: begin
-                    o_axi_rvalid    <= 0;
-                    if(i_axi_arvalid) begin
-                        o_axi_arready   <= 1;
-                        addr_r          <= i_axi_araddr; //luu dia chi doc
-                        R_state         <= R_READ;
+            else begin
+                case (R_state)
+                    R_ADDRESS: begin
+                        o_axi_rvalid    <= 0; 
+                        if(i_axi_arvalid) begin
+                            o_axi_arready   <= 1;
+                            
+                            R_state         <= R_READ;
+                        end
                     end
-                end
 
-                R_READ: begin
-                    o_axi_arready   <= 0;
-                    if (i_axi_rready) begin
-                        o_axi_rvalid    <= 1;
-                        o_axi_rdata     <= dout;
-                        R_state         <= R_ADDRESS;
+                    R_READ: begin
+                        o_axi_arready   <= 0;
+                        if (i_axi_rready) begin
+                            o_axi_rvalid    <= 1;
+                            o_axi_rdata     <= dout;
+                            R_state         <= R_ADDRESS;
+                        end
                     end
-                end
 
-                default: R_state <= R_ADDRESS;
-            endcase
+                    default: R_state <= R_ADDRESS;
+                endcase
 
-        end
+            end
 
 
     end
@@ -202,7 +203,7 @@ module dmem #(
     //initial $readmemh("firmware.hex", dmem);
 
     always @(posedge clk) begin
-        dout <= dmem[addr_r >> 2];
+        dout <= dmem[addr_r>>2];
         if (wen[0]) dmem[addr_w >> 2][ 7: 0] <= din[ 7: 0];
 		if (wen[1]) dmem[addr_w >> 2][15: 8] <= din[15: 8];
 		if (wen[2]) dmem[addr_w >> 2][23:16] <= din[23:16];

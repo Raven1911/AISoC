@@ -48,44 +48,46 @@ module imem_axi_lite#(
     reg [1:0] R_state;
 
     // Signals to connect to imem
-    reg  [ADDR_WIDTH-1:0]   addr_r;
+    wire [ADDR_WIDTH-1:0]   addr_r;
     wire [DATA_WIDTH-1:0]   dout;
 
+
+    assign addr_r = i_axi_araddr; //luu dia chi doc
     // Read Channel FSM
-   always @(posedge clk or negedge resetn) begin
-        if (~resetn) begin
-            o_axi_arready   <= 0;
-            o_axi_rvalid    <= 0;
-            o_axi_rdata     <= 0;
-            R_state         <= R_ADDRESS;
-            addr_r          <= 0;
+    always @(posedge clk or negedge resetn) begin
+            if (~resetn) begin
+                o_axi_arready   <= 0;
+                o_axi_rvalid    <= 0;
+                o_axi_rdata     <= 0;
+                R_state         <= R_ADDRESS;
+                //addr_r          <= 0;
 
-        end
+            end
 
-        else begin
-            case (R_state)
-                R_ADDRESS: begin
-                    o_axi_rvalid    <= 0;
-                    if(i_axi_arvalid) begin
-                        o_axi_arready   <= 1;
-                        addr_r          <= i_axi_araddr; //luu dia chi doc
-                        R_state         <= R_READ;
+            else begin
+                case (R_state)
+                    R_ADDRESS: begin
+                        o_axi_rvalid    <= 0; 
+                        if(i_axi_arvalid) begin
+                            o_axi_arready   <= 1;
+                            
+                            R_state         <= R_READ;
+                        end
                     end
-                end
 
-                R_READ: begin
-                    o_axi_arready   <= 0;
-                    if (i_axi_rready) begin
-                        o_axi_rvalid    <= 1;
-                        o_axi_rdata     <= dout;
-                        R_state         <= R_ADDRESS;
+                    R_READ: begin
+                        o_axi_arready   <= 0;
+                        if (i_axi_rready) begin
+                            o_axi_rvalid    <= 1;
+                            o_axi_rdata     <= dout;
+                            R_state         <= R_ADDRESS;
+                        end
                     end
-                end
 
-                default: R_state <= R_ADDRESS;
-            endcase
+                    default: R_state <= R_ADDRESS;
+                endcase
 
-        end
+            end
 
 
     end
