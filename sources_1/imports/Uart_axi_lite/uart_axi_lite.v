@@ -55,8 +55,8 @@ module uart_axi_lite#(
     input                           i_axi_rready,
 
     //RX TX
-    output      tx0,
-    input       rx0
+    output      tx,
+    input       rx
     );
 
     //signals to connect
@@ -91,9 +91,9 @@ module uart_axi_lite#(
     end
 
     //decoding logic
-    assign wr_dvsr = (o_valid_w && (o_addr_w[1:0] == 2'b01)) ? 1 : 0;
-    assign wr_uart = (o_valid_w && (o_addr_w[1:0] == 2'b10)) ? 1 : 0;
-    assign rd_uart = (o_valid_r && (o_addr_r[1:0] == 2'b11)) ? 1 : 0;
+    assign wr_dvsr = (o_valid_w && (o_addr_w == 32'h0200_0004)) ? 1 : 0;
+    assign wr_uart = (o_valid_w && (o_addr_w == 32'h0200_0008)) ? 1 : 0;
+    assign rd_uart = (o_valid_r && (o_addr_r == 32'h0200_000C)) ? 1 : 0;
 
     //slot read
     assign i_data_r = {22'h00000, tx_full, rx_empty, r_data};
@@ -108,12 +108,12 @@ module uart_axi_lite#(
         .reset_n(resetn),
         .rd_uart(rd_uart),
         .wr_uart(wr_uart),
-        .rx(rx0),
+        .rx(rx),
         .w_data(o_data_w[7:0]),
         .dvsr(dvsr_reg),
         .tx_full(tx_full),
         .rx_empty(rx_empty),
-        .tx(tx0),
+        .tx(tx),
         .r_data(r_data)
     );
 

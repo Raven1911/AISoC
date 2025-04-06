@@ -23,9 +23,16 @@
 module AISoc(
     input clk,
     input resetn,
-    output trap
+    output trap,
+
+    //gpio uart0
+    input  wire rx0,
+    output wire tx0
+    
 
     );
+    //config axi interconnect
+    parameter NUM_SLAVES = 3;
 
     //config cpu
     parameter [ 0:0] ENABLE_COUNTERS = 1;
@@ -42,7 +49,7 @@ module AISoc(
 	parameter [ 0:0] ENABLE_PCPI = 0;
 	parameter [ 0:0] ENABLE_MUL = 1;
 	parameter [ 0:0] ENABLE_FAST_MUL = 0;
-	parameter [ 0:0] ENABLE_DIV = 0;
+	parameter [ 0:0] ENABLE_DIV = 1;
 	parameter [ 0:0] ENABLE_IRQ = 0;
 	parameter [ 0:0] ENABLE_IRQ_QREGS = 1;
 	parameter [ 0:0] ENABLE_IRQ_TIMER = 1;
@@ -78,15 +85,7 @@ module AISoc(
     wire [31:0] s_mem_awaddr;
     wire [31:0] s_mem_araddr;
 
-    // // AXI signals to imem_axi_lite
-    wire        imem_arvalid, imem_arready;
-    //wire [31:0] imem_araddr;
-    wire [ 2:0] imem_arprot;
-    wire        imem_rvalid, imem_rready;
-    wire [31:0] imem_rdata;
-    
-
-    // AXI signals to dmem_axi_lite
+    // AXI signals to dmem_axi_lite//////////////////slave 0/////////////////////
     wire        dmem_awvalid, dmem_awready;
     //wire [31:0] dmem_awaddr;
     wire [ 2:0] dmem_awprot;
@@ -99,6 +98,32 @@ module AISoc(
     wire [ 2:0] dmem_arprot;
     wire        dmem_rvalid, dmem_rready;
     wire [31:0] dmem_rdata;
+
+    // // AXI signals to imem_axi_lite//////////////////slave 1/////////////////////
+    wire        imem_awvalid, imem_awready;
+    wire [ 2:0] imem_awprot;
+    wire        imem_wvalid, imem_wready;
+    wire [31:0] imem_wdata;
+    wire [ 3:0] imem_wstrb;
+    wire        imem_bvalid, imem_bready;
+    wire        imem_arvalid, imem_arready;
+    //wire [31:0] imem_araddr;
+    wire [ 2:0] imem_arprot;
+    wire        imem_rvalid, imem_rready;
+    wire [31:0] imem_rdata;
+
+    // AXI signals to uart0_axi_lite//////////////////slave 2/////////////////////
+    wire        uart0_awvalid, uart0_awready;
+    wire [ 2:0] uart0_awprot;
+    wire        uart0_wvalid, uart0_wready;
+    wire [31:0] uart0_wdata;
+    wire [ 3:0] uart0_wstrb;
+    wire        uart0_bvalid, uart0_bready;
+    wire        uart0_arvalid, uart0_arready;
+    wire [31:0] uart0_araddr;
+    wire [ 2:0] uart0_arprot;
+    wire        uart0_rvalid, uart0_rready;
+    wire [31:0] uart0_rdata;
 
     // Instantiate picorv32_axi
     picorv32_axi #(
@@ -156,7 +181,7 @@ module AISoc(
     // Instantiate axi lite interconnect
     // Instantiate axi_lite_interconnect
     axi_lite_interconnect #(
-        .NUM_SLAVES(2),
+        .NUM_SLAVES(NUM_SLAVES),
         .ADDR_WIDTH(ADDR_WIDTH),
         .DATA_WIDTH(DATA_WIDTH)
     ) interconnect (
@@ -181,24 +206,24 @@ module AISoc(
         .i_m_axi_rready(cpu_rready),
         .o_m_axi_rdata(cpu_rdata),
 
-        // Slave Interfaces [0: dmem, 1: imem]
+        // Slave Interfaces [2: uart0, 1: imem, 0: dmem]
         .o_s_axi_awaddr(s_mem_awaddr),
-        .o_s_axi_awvalid({imem_awvalid, dmem_awvalid}),
-        .i_s_axi_awready({imem_awready, dmem_awready}),
-        .o_s_axi_awprot({imem_awprot, dmem_awprot}),
-        .o_s_axi_wdata({imem_wdata, dmem_wdata}),
-        .o_s_axi_wstrb({imem_wstrb, dmem_wstrb}),
-        .o_s_axi_wvalid({imem_wvalid, dmem_wvalid}),
-        .i_s_axi_wready({imem_wready, dmem_wready}),
-        .i_s_axi_bvalid({imem_bvalid, dmem_bvalid}),
-        .o_s_axi_bready({imem_bready, dmem_bready}),
+        .o_s_axi_awvalid({uart0_awvalid, imem_awvalid, dmem_awvalid}),
+        .i_s_axi_awready({uart0_awready, imem_awready, dmem_awready}),
+        .o_s_axi_awprot({uart0_awprot, imem_awprot, dmem_awprot}),
+        .o_s_axi_wdata({uart0_wdata, imem_wdata, dmem_wdata}),
+        .o_s_axi_wstrb({uart0_wstrb, imem_wstrb, dmem_wstrb}),
+        .o_s_axi_wvalid({uart0_wvalid, imem_wvalid, dmem_wvalid}),
+        .i_s_axi_wready({uart0_wready, imem_wready, dmem_wready}),
+        .i_s_axi_bvalid({uart0_bvalid, imem_bvalid, dmem_bvalid}),
+        .o_s_axi_bready({uart0_bready, imem_bready, dmem_bready}),
         .o_s_axi_araddr(s_mem_araddr),
-        .o_s_axi_arvalid({imem_arvalid, dmem_arvalid}),
-        .i_s_axi_arready({imem_arready, dmem_arready}),
-        .o_s_axi_arprot({imem_arprot, dmem_arprot}),
-        .i_s_axi_rdata({imem_rdata, dmem_rdata}),
-        .i_s_axi_rvalid({imem_rvalid, dmem_rvalid}),
-        .o_s_axi_rready({imem_rready, dmem_rready})
+        .o_s_axi_arvalid({uart0_arvalid, imem_arvalid, dmem_arvalid}),
+        .i_s_axi_arready({uart0_arready, imem_arready, dmem_arready}),
+        .o_s_axi_arprot({uart0_arprot, imem_arprot, dmem_arprot}),
+        .i_s_axi_rdata({uart0_rdata, imem_rdata, dmem_rdata}),
+        .i_s_axi_rvalid({uart0_rvalid, imem_rvalid, dmem_rvalid}),
+        .o_s_axi_rready({uart0_rready, imem_rready, dmem_rready})
     );
 
 
@@ -245,6 +270,35 @@ module AISoc(
         .o_axi_rvalid(imem_rvalid),
         .i_axi_rready(imem_rready),
         .o_axi_rdata(imem_rdata)
+    );
+
+
+    // Instantiate uart0_axi_lite (Slave 2)
+    uart_axi_lite #(
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH),
+        .FIFO_DEPTH_BIT(8)
+    ) uart0 (
+        .clk(clk),
+        .resetn(resetn),
+        .i_axi_awvalid(uart0_awvalid),
+        .o_axi_awready(uart0_awready),
+        .i_axi_awaddr(s_mem_awaddr),
+        .i_axi_wvalid(uart0_wvalid),
+        .o_axi_wready(uart0_wready),
+        .i_axi_wdata(uart0_wdata),
+        .i_axi_wstrb(uart0_wstrb),
+        .o_axi_bvalid(uart0_bvalid),
+        .i_axi_bready(uart0_bready),
+        .i_axi_arvalid(uart0_arvalid),
+        .o_axi_arready(uart0_arready),
+        .i_axi_araddr(s_mem_araddr),
+        .o_axi_rvalid(uart0_rvalid),
+        .i_axi_rready(uart0_rready),
+        .o_axi_rdata(uart0_rdata),
+
+        .tx(tx0),
+        .rx(rx0)
     );
 
 endmodule

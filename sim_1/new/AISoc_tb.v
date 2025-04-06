@@ -26,11 +26,17 @@ module AISoc_tb(
 
     reg clk, resetn;
     wire trap;
+    //gpio uart0
+    reg rx0;
+    wire tx0;
 
     AISoc Top_Module(
     .clk(clk),
     .resetn(resetn),
-    .trap(trap)
+    .trap(trap),
+    
+    .rx0(rx0),
+    .tx0(tx0)
     );
 
     always #5 clk = ~clk; // 100MHz clock

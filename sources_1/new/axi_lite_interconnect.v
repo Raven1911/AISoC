@@ -23,7 +23,7 @@
  * AXI4-Lite Interconnect for picorv32_axi (1 Master, Multiple Slaves)
  ***************************************************************/
 module axi_lite_interconnect #(
-    parameter NUM_SLAVES = 2,
+    parameter NUM_SLAVES = 3,
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32
 )(
@@ -152,7 +152,7 @@ endmodule
  * AXI4-Lite Decoder
  ***************************************************************/
 module axi_lite_decoder #(
-    parameter NUM_SLAVES = 2,
+    parameter NUM_SLAVES = 3,
     parameter ADDR_WIDTH = 32
 )(
     input  [ADDR_WIDTH-1:0]     i_axi_awaddr,      // Input Write Address
@@ -185,39 +185,44 @@ module axi_lite_decoder #(
         //decoder write channel
         if (i_axi_awvalid) begin
             casex (write_addr_upper)
-                'h00xx_xxxx: o_slave_select_write = 'b01;  // Slave 0
-                'h01xx_xxxx: o_slave_select_write = 'b10;  // Slave 1
-                default:  o_slave_select_write = 'b00;  // No slave selected
+                'h00xx_xxxx: o_slave_select_write = 'b001;  // Slave 0
+                'h01xx_xxxx: o_slave_select_write = 'b010;  // Slave 1
+                'h02xx_xxxx: o_slave_select_write = 'b100;  // Slave 2
+                default:  o_slave_select_write = 'b000;  // No slave selected
             endcase
         end
         if (i_axi_wvalid) begin
             casex (write_addr_upper)
-                'h00xx_xxxx: o_slave_select_write_data = 'b01;  // Slave 0
-                'h01xx_xxxx: o_slave_select_write_data = 'b10;  // Slave 1
-                default:  o_slave_select_write_data = 'b00;  // No slave selected
+                'h00xx_xxxx: o_slave_select_write_data = 'b001;  // Slave 0
+                'h01xx_xxxx: o_slave_select_write_data = 'b010;  // Slave 1
+                'h02xx_xxxx: o_slave_select_write_data = 'b100;  // Slave 2
+                default:  o_slave_select_write_data = 'b000;  // No slave selected
             endcase
         end
         if (i_axi_bready) begin
             casex (write_addr_upper)
-                'h00xx_xxxx: o_slave_select_write_bresp = 'b01;  // Slave 0
-                'h01xx_xxxx: o_slave_select_write_bresp = 'b10;  // Slave 1
-                default:  o_slave_select_write_bresp = 'b00;  // No slave selected
+                'h00xx_xxxx: o_slave_select_write_bresp = 'b001;  // Slave 0
+                'h01xx_xxxx: o_slave_select_write_bresp = 'b010;  // Slave 1
+                'h02xx_xxxx: o_slave_select_write_bresp = 'b100;  // Slave 2
+                default:  o_slave_select_write_bresp = 'b000;  // No slave selected
             endcase
         end
 
         //decoder read channel
         if (i_axi_arvalid) begin
             casex (read_addr_upper)
-                'h00xx_xxxx: o_slave_select_read = 2'b01;  // Slave 0
-                'h01xx_xxxx: o_slave_select_read = 2'b10;  // Slave 1
-                default:  o_slave_select_read = 'b00;  // No slave selected
+                'h00xx_xxxx: o_slave_select_read = 'b001;  // Slave 0
+                'h01xx_xxxx: o_slave_select_read = 'b010;  // Slave 1
+                'h02xx_xxxx: o_slave_select_read = 'b100;  // Slave 2
+                default:  o_slave_select_read = 'b000;  // No slave selected
             endcase
         end
         if (i_axi_rready) begin
             casex (read_addr_upper)
-                'h00xx_xxxx: o_slave_select_read_data = 2'b01;  // Slave 0
-                'h01xx_xxxx: o_slave_select_read_data = 2'b10;  // Slave 1
-                default:  o_slave_select_read_data = 'b00;  // No slave selected
+                'h00xx_xxxx: o_slave_select_read_data = 'b001;  // Slave 0
+                'h01xx_xxxx: o_slave_select_read_data = 'b010;  // Slave 1
+                'h02xx_xxxx: o_slave_select_read_data = 'b100;  // Slave 2
+                default:  o_slave_select_read_data = 'b000;  // No slave selected
             endcase
         end
     end
@@ -228,7 +233,7 @@ endmodule
  * AXI4-Lite Multiplexer
  ***************************************************************/
 module axi_lite_mux #(
-    parameter NUM_SLAVES = 2,
+    parameter NUM_SLAVES = 3,
     parameter DATA_WIDTH = 32
 )(
     // Master Interface (from picorv32_axi)
@@ -267,48 +272,62 @@ module axi_lite_mux #(
 );
 
     // Write Address Channel
-    assign o_s_axi_awvalid =    i_slave_select_write[0] ? {1'b0,i_m_axi_awvalid} :
-                                i_slave_select_write[1] ? {i_m_axi_awvalid,1'b0} : 0;
+    assign o_s_axi_awvalid =    i_slave_select_write[0] ? {1'b0, 1'b0, i_m_axi_awvalid} :
+                                i_slave_select_write[1] ? {1'b0, i_m_axi_awvalid, 1'b0} :
+                                i_slave_select_write[2] ? {i_m_axi_awvalid, 1'b0, 1'b0} : 0;
 
     assign o_m_axi_awready =    i_slave_select_write[0] ? i_s_axi_awready[0] : 
-                                i_slave_select_write[1] ? i_s_axi_awready[1] : 0;
+                                i_slave_select_write[1] ? i_s_axi_awready[1] :
+                                i_slave_select_write[2] ? i_s_axi_awready[2] : 0;
 
     // Write Data Channel
-    assign o_s_axi_wvalid = i_slave_select_write_data[0] ? {1'b0,i_m_axi_wvalid} :
-                            i_slave_select_write_data[1] ? {i_m_axi_wvalid,1'b0} : 0;
+    assign o_s_axi_wvalid = i_slave_select_write_data[0] ? {1'b0, 1'b0, i_m_axi_wvalid} :
+                            i_slave_select_write_data[1] ? {1'b0, i_m_axi_wvalid, 1'b0} :
+                            i_slave_select_write_data[2] ? {i_m_axi_wvalid, 1'b0, 1'b0} : 0;
 
     assign o_s_axi_wdata[0] = (i_slave_select_write_data[0]) ? i_m_axi_wdata : 0;
     assign o_s_axi_wdata[1] = (i_slave_select_write_data[1]) ? i_m_axi_wdata : 0;
+    assign o_s_axi_wdata[2] = (i_slave_select_write_data[2]) ? i_m_axi_wdata : 0;
+
     assign o_s_axi_wstrb[0] = (i_slave_select_write_data[0]) ? i_m_axi_wstrb : 0;
     assign o_s_axi_wstrb[1] = (i_slave_select_write_data[1]) ? i_m_axi_wstrb : 0;
+    assign o_s_axi_wstrb[2] = (i_slave_select_write_data[2]) ? i_m_axi_wstrb : 0;
     
     assign o_m_axi_wready = i_slave_select_write_data[0] ? i_s_axi_wready[0] : 
-                            i_slave_select_write_data[1] ? i_s_axi_wready[1] : 0;
+                            i_slave_select_write_data[1] ? i_s_axi_wready[1] :
+                            i_slave_select_write_data[2] ? i_s_axi_wready[2] : 0;
 
                             
     // Write Response Channel
     assign o_m_axi_bvalid = i_slave_select_write_bresp[0] ? i_s_axi_bvalid[0] :
-                            i_slave_select_write_bresp[1] ? i_s_axi_bvalid[1] : 0;
+                            i_slave_select_write_bresp[1] ? i_s_axi_bvalid[1] :
+                            i_slave_select_write_bresp[2] ? i_s_axi_bvalid[2] : 0;
 
-    assign o_s_axi_bready = i_slave_select_write_bresp[0] ? {1'b0,i_m_axi_bready} :
-                            i_slave_select_write_bresp[1] ? {i_m_axi_bready,1'b0} : 0;
+    assign o_s_axi_bready = i_slave_select_write_bresp[0] ? {1'b0, 1'b0, i_m_axi_bready} :
+                            i_slave_select_write_bresp[1] ? {1'b0, i_m_axi_bready, 1'b0} :
+                            i_slave_select_write_bresp[2] ? {i_m_axi_bready, 1'b0, 1'b0} : 0;
 
     // Read Address Channel
-    assign o_s_axi_arvalid =    i_slave_select_read[0] ? 'b01 :
-                                i_slave_select_read[1] ? 'b10 : 'b0;
+    assign o_s_axi_arvalid =    i_slave_select_read[0] ? 'b001 :
+                                i_slave_select_read[1] ? 'b010 :
+                                i_slave_select_read[2] ? 'b100 : 'b0;
 
     assign o_m_axi_arready =    i_slave_select_read[0] ? i_s_axi_arready[0] : 
-                                i_slave_select_read[1] ? i_s_axi_arready[1] : 0;
+                                i_slave_select_read[1] ? i_s_axi_arready[1] :
+                                i_slave_select_read[2] ? i_s_axi_arready[2] : 0;
 
     // Read Data Channel
     assign o_m_axi_rdata =  i_s_axi_rvalid[0] ? i_s_axi_rdata[0] :
-                            i_s_axi_rvalid[1] ? i_s_axi_rdata[1] : 0;
+                            i_s_axi_rvalid[1] ? i_s_axi_rdata[1] :
+                            i_s_axi_rvalid[2] ? i_s_axi_rdata[2] : 0;
 
     assign o_m_axi_rvalid = i_slave_select_read_data[0] ? i_s_axi_rvalid[0] : 
-                            i_slave_select_read_data[1] ? i_s_axi_rvalid[1] : 0;
+                            i_slave_select_read_data[1] ? i_s_axi_rvalid[1] :
+                            i_slave_select_read_data[2] ? i_s_axi_rvalid[2] : 0;
 
-    assign o_s_axi_rready = i_slave_select_read_data[0] ? {1'b0,i_m_axi_rready} :
-                            i_slave_select_read_data[1] ? {i_m_axi_rready,1'b0} : 0;
+    assign o_s_axi_rready = i_slave_select_read_data[0] ? {1'b0, 1'b0, i_m_axi_rready} :
+                            i_slave_select_read_data[1] ? {1'b0, i_m_axi_rready, 1'b0} :
+                            i_slave_select_read_data[2] ? {i_m_axi_rready, 1'b0, 1'b0} : 0;
 
 
 endmodule
