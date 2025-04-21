@@ -43,8 +43,8 @@ module AISoc_tb(
 
     initial begin
         clk = 0;
-        resetn = 0;
-
+        //#10 resetn = 1;
+        #10 resetn = 0;
         #10 resetn = 1;
 
         #10000 $finish;

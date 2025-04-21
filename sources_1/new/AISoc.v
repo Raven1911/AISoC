@@ -94,7 +94,7 @@ module AISoc(
     wire [ 3:0] dmem_wstrb;
     wire        dmem_bvalid, dmem_bready;
     wire        dmem_arvalid, dmem_arready;
-    wire [31:0] dmem_araddr;
+    //wire [31:0] dmem_araddr;
     wire [ 2:0] dmem_arprot;
     wire        dmem_rvalid, dmem_rready;
     wire [31:0] dmem_rdata;
@@ -120,7 +120,7 @@ module AISoc(
     wire [ 3:0] uart0_wstrb;
     wire        uart0_bvalid, uart0_bready;
     wire        uart0_arvalid, uart0_arready;
-    wire [31:0] uart0_araddr;
+    //wire [31:0] uart0_araddr;
     wire [ 2:0] uart0_arprot;
     wire        uart0_rvalid, uart0_rready;
     wire [31:0] uart0_rdata;
@@ -185,8 +185,9 @@ module AISoc(
         .ADDR_WIDTH(ADDR_WIDTH),
         .DATA_WIDTH(DATA_WIDTH)
     ) interconnect (
-        .clk(clk),
-        .reset_n(resetn),
+        //.clk(clk),
+        .resetn(resetn),
+        
         // Master Interface (to CPU)
         .i_m_axi_awvalid(cpu_awvalid),
         .o_m_axi_awready(cpu_awready),

@@ -4,294 +4,314 @@ main.elf:     file format elf32-littleriscv
 
 Disassembly of section .text:
 
-00000000 <main>:
-   0:	fe010113          	addi	sp,sp,-32
-   4:	00112e23          	sw	ra,28(sp)
-   8:	00812c23          	sw	s0,24(sp)
-   c:	02010413          	addi	s0,sp,32
-  10:	fe840793          	addi	a5,s0,-24
-  14:	020005b7          	lui	a1,0x2000
-  18:	00078513          	mv	a0,a5
-  1c:	14c000ef          	jal	168 <_ZN4UartC1Em>
-  20:	fe840713          	addi	a4,s0,-24
-  24:	0001c7b7          	lui	a5,0x1c
-  28:	20078613          	addi	a2,a5,512 # 1c200 <_ZNSt8__detail30__integer_to_chars_is_unsignedIyEE+0x1bdbe>
-  2c:	077367b7          	lui	a5,0x7736
-  30:	94078593          	addi	a1,a5,-1728 # 7735940 <_ZNSt8__detail30__integer_to_chars_is_unsignedIyEE+0x77354fe>
-  34:	00070513          	mv	a0,a4
-  38:	1f8000ef          	jal	230 <_ZN4Uart4initEmm>
-  3c:	fe840793          	addi	a5,s0,-24
-  40:	04100593          	li	a1,65
-  44:	00078513          	mv	a0,a5
-  48:	248000ef          	jal	290 <_ZN4Uart5writeEh>
-  4c:	fe840793          	addi	a5,s0,-24
-  50:	04900593          	li	a1,73
-  54:	00078513          	mv	a0,a5
-  58:	238000ef          	jal	290 <_ZN4Uart5writeEh>
-  5c:	fe840793          	addi	a5,s0,-24
-  60:	05300593          	li	a1,83
-  64:	00078513          	mv	a0,a5
-  68:	228000ef          	jal	290 <_ZN4Uart5writeEh>
-  6c:	fe840793          	addi	a5,s0,-24
-  70:	06f00593          	li	a1,111
-  74:	00078513          	mv	a0,a5
-  78:	218000ef          	jal	290 <_ZN4Uart5writeEh>
-  7c:	fe840793          	addi	a5,s0,-24
-  80:	04300593          	li	a1,67
-  84:	00078513          	mv	a0,a5
-  88:	208000ef          	jal	290 <_ZN4Uart5writeEh>
-  8c:	fe840793          	addi	a5,s0,-24
-  90:	02000593          	li	a1,32
-  94:	00078513          	mv	a0,a5
-  98:	1f8000ef          	jal	290 <_ZN4Uart5writeEh>
-  9c:	fe840793          	addi	a5,s0,-24
-  a0:	07800593          	li	a1,120
-  a4:	00078513          	mv	a0,a5
-  a8:	1e8000ef          	jal	290 <_ZN4Uart5writeEh>
-  ac:	fe840793          	addi	a5,s0,-24
-  b0:	06900593          	li	a1,105
-  b4:	00078513          	mv	a0,a5
-  b8:	1d8000ef          	jal	290 <_ZN4Uart5writeEh>
-  bc:	fe840793          	addi	a5,s0,-24
-  c0:	06e00593          	li	a1,110
-  c4:	00078513          	mv	a0,a5
-  c8:	1c8000ef          	jal	290 <_ZN4Uart5writeEh>
-  cc:	fe840793          	addi	a5,s0,-24
-  d0:	02000593          	li	a1,32
-  d4:	00078513          	mv	a0,a5
-  d8:	1b8000ef          	jal	290 <_ZN4Uart5writeEh>
-  dc:	fe840793          	addi	a5,s0,-24
-  e0:	06300593          	li	a1,99
-  e4:	00078513          	mv	a0,a5
-  e8:	1a8000ef          	jal	290 <_ZN4Uart5writeEh>
-  ec:	fe840793          	addi	a5,s0,-24
-  f0:	06800593          	li	a1,104
-  f4:	00078513          	mv	a0,a5
-  f8:	198000ef          	jal	290 <_ZN4Uart5writeEh>
-  fc:	fe840793          	addi	a5,s0,-24
- 100:	06100593          	li	a1,97
- 104:	00078513          	mv	a0,a5
- 108:	188000ef          	jal	290 <_ZN4Uart5writeEh>
- 10c:	fe840793          	addi	a5,s0,-24
- 110:	06f00593          	li	a1,111
- 114:	00078513          	mv	a0,a5
- 118:	178000ef          	jal	290 <_ZN4Uart5writeEh>
- 11c:	fe840793          	addi	a5,s0,-24
- 120:	00a00593          	li	a1,10
- 124:	00078513          	mv	a0,a5
- 128:	168000ef          	jal	290 <_ZN4Uart5writeEh>
- 12c:	fe840793          	addi	a5,s0,-24
- 130:	00078513          	mv	a0,a5
- 134:	1c4000ef          	jal	2f8 <_ZN4Uart4readEv>
- 138:	00050793          	mv	a5,a0
- 13c:	fef41723          	sh	a5,-18(s0)
- 140:	fee41703          	lh	a4,-18(s0)
- 144:	fff00793          	li	a5,-1
- 148:	fef702e3          	beq	a4,a5,12c <main+0x12c>
- 14c:	fee45783          	lhu	a5,-18(s0)
- 150:	0ff7f713          	zext.b	a4,a5
- 154:	fe840793          	addi	a5,s0,-24
- 158:	00070593          	mv	a1,a4
- 15c:	00078513          	mv	a0,a5
- 160:	130000ef          	jal	290 <_ZN4Uart5writeEh>
- 164:	fc9ff06f          	j	12c <main+0x12c>
+01000000 <main>:
+ 1000000:	fe010113          	addi	sp,sp,-32
+ 1000004:	00112e23          	sw	ra,28(sp)
+ 1000008:	00812c23          	sw	s0,24(sp)
+ 100000c:	02010413          	addi	s0,sp,32
+ 1000010:	fe440793          	addi	a5,s0,-28
+ 1000014:	020005b7          	lui	a1,0x2000
+ 1000018:	00078513          	mv	a0,a5
+ 100001c:	164000ef          	jal	1000180 <_ZN4UartC1Em>
+ 1000020:	fe440713          	addi	a4,s0,-28
+ 1000024:	0001c7b7          	lui	a5,0x1c
+ 1000028:	20078613          	addi	a2,a5,512 # 1c200 <_ebss+0x1c200>
+ 100002c:	077367b7          	lui	a5,0x7736
+ 1000030:	94078593          	addi	a1,a5,-1728 # 7735940 <_etext+0x67354d8>
+ 1000034:	00070513          	mv	a0,a4
+ 1000038:	210000ef          	jal	1000248 <_ZN4Uart4initEmm>
+ 100003c:	010007b7          	lui	a5,0x1000
+ 1000040:	45878793          	addi	a5,a5,1112 # 1000458 <_ZN4Uart12write_stringEPKc+0x5c>
+ 1000044:	fef42423          	sw	a5,-24(s0)
+ 1000048:	fe0407a3          	sb	zero,-17(s0)
+ 100004c:	fe440793          	addi	a5,s0,-28
+ 1000050:	04100593          	li	a1,65
+ 1000054:	00078513          	mv	a0,a5
+ 1000058:	250000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100005c:	fe440793          	addi	a5,s0,-28
+ 1000060:	04900593          	li	a1,73
+ 1000064:	00078513          	mv	a0,a5
+ 1000068:	240000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100006c:	fe440793          	addi	a5,s0,-28
+ 1000070:	05300593          	li	a1,83
+ 1000074:	00078513          	mv	a0,a5
+ 1000078:	230000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100007c:	fe440793          	addi	a5,s0,-28
+ 1000080:	06f00593          	li	a1,111
+ 1000084:	00078513          	mv	a0,a5
+ 1000088:	220000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100008c:	fe440793          	addi	a5,s0,-28
+ 1000090:	04300593          	li	a1,67
+ 1000094:	00078513          	mv	a0,a5
+ 1000098:	210000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100009c:	fe440793          	addi	a5,s0,-28
+ 10000a0:	02000593          	li	a1,32
+ 10000a4:	00078513          	mv	a0,a5
+ 10000a8:	200000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 10000ac:	fe440793          	addi	a5,s0,-28
+ 10000b0:	07800593          	li	a1,120
+ 10000b4:	00078513          	mv	a0,a5
+ 10000b8:	1f0000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 10000bc:	fe440793          	addi	a5,s0,-28
+ 10000c0:	06900593          	li	a1,105
+ 10000c4:	00078513          	mv	a0,a5
+ 10000c8:	1e0000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 10000cc:	fe440793          	addi	a5,s0,-28
+ 10000d0:	06e00593          	li	a1,110
+ 10000d4:	00078513          	mv	a0,a5
+ 10000d8:	1d0000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 10000dc:	fe440793          	addi	a5,s0,-28
+ 10000e0:	02000593          	li	a1,32
+ 10000e4:	00078513          	mv	a0,a5
+ 10000e8:	1c0000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 10000ec:	fe440793          	addi	a5,s0,-28
+ 10000f0:	06300593          	li	a1,99
+ 10000f4:	00078513          	mv	a0,a5
+ 10000f8:	1b0000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 10000fc:	fe440793          	addi	a5,s0,-28
+ 1000100:	06800593          	li	a1,104
+ 1000104:	00078513          	mv	a0,a5
+ 1000108:	1a0000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100010c:	fe440793          	addi	a5,s0,-28
+ 1000110:	06100593          	li	a1,97
+ 1000114:	00078513          	mv	a0,a5
+ 1000118:	190000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100011c:	fe440793          	addi	a5,s0,-28
+ 1000120:	06f00593          	li	a1,111
+ 1000124:	00078513          	mv	a0,a5
+ 1000128:	180000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100012c:	fe440793          	addi	a5,s0,-28
+ 1000130:	00a00593          	li	a1,10
+ 1000134:	00078513          	mv	a0,a5
+ 1000138:	170000ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 100013c:	0200006f          	j	100015c <main+0x15c>
+ 1000140:	fe440793          	addi	a5,s0,-28
+ 1000144:	fe842583          	lw	a1,-24(s0)
+ 1000148:	00078513          	mv	a0,a5
+ 100014c:	2b0000ef          	jal	10003fc <_ZN4Uart12write_stringEPKc>
+ 1000150:	fef44783          	lbu	a5,-17(s0)
+ 1000154:	00178793          	addi	a5,a5,1
+ 1000158:	fef407a3          	sb	a5,-17(s0)
+ 100015c:	fef44703          	lbu	a4,-17(s0)
+ 1000160:	00900793          	li	a5,9
+ 1000164:	fce7fee3          	bgeu	a5,a4,1000140 <main+0x140>
+ 1000168:	00000793          	li	a5,0
+ 100016c:	00078513          	mv	a0,a5
+ 1000170:	01c12083          	lw	ra,28(sp)
+ 1000174:	01812403          	lw	s0,24(sp)
+ 1000178:	02010113          	addi	sp,sp,32
+ 100017c:	00008067          	ret
 
-00000168 <_ZN4UartC1Em>:
- 168:	fe010113          	addi	sp,sp,-32
- 16c:	00112e23          	sw	ra,28(sp)
- 170:	00812c23          	sw	s0,24(sp)
- 174:	02010413          	addi	s0,sp,32
- 178:	fea42623          	sw	a0,-20(s0)
- 17c:	feb42423          	sw	a1,-24(s0)
- 180:	fe842703          	lw	a4,-24(s0)
- 184:	fec42783          	lw	a5,-20(s0)
- 188:	00e7a023          	sw	a4,0(a5)
- 18c:	00000013          	nop
- 190:	01c12083          	lw	ra,28(sp)
- 194:	01812403          	lw	s0,24(sp)
- 198:	02010113          	addi	sp,sp,32
- 19c:	00008067          	ret
+01000180 <_ZN4UartC1Em>:
+ 1000180:	fe010113          	addi	sp,sp,-32
+ 1000184:	00112e23          	sw	ra,28(sp)
+ 1000188:	00812c23          	sw	s0,24(sp)
+ 100018c:	02010413          	addi	s0,sp,32
+ 1000190:	fea42623          	sw	a0,-20(s0)
+ 1000194:	feb42423          	sw	a1,-24(s0)
+ 1000198:	fe842703          	lw	a4,-24(s0)
+ 100019c:	fec42783          	lw	a5,-20(s0)
+ 10001a0:	00e7a023          	sw	a4,0(a5)
+ 10001a4:	00000013          	nop
+ 10001a8:	01c12083          	lw	ra,28(sp)
+ 10001ac:	01812403          	lw	s0,24(sp)
+ 10001b0:	02010113          	addi	sp,sp,32
+ 10001b4:	00008067          	ret
 
-000001a0 <_ZN4Uart9write_regEmm>:
- 1a0:	fe010113          	addi	sp,sp,-32
- 1a4:	00112e23          	sw	ra,28(sp)
- 1a8:	00812c23          	sw	s0,24(sp)
- 1ac:	02010413          	addi	s0,sp,32
- 1b0:	fea42623          	sw	a0,-20(s0)
- 1b4:	feb42423          	sw	a1,-24(s0)
- 1b8:	fec42223          	sw	a2,-28(s0)
- 1bc:	fec42783          	lw	a5,-20(s0)
- 1c0:	0007a703          	lw	a4,0(a5)
- 1c4:	fe842783          	lw	a5,-24(s0)
- 1c8:	00279793          	slli	a5,a5,0x2
- 1cc:	00f707b3          	add	a5,a4,a5
- 1d0:	fe442703          	lw	a4,-28(s0)
- 1d4:	00e7a023          	sw	a4,0(a5)
- 1d8:	00000013          	nop
- 1dc:	01c12083          	lw	ra,28(sp)
- 1e0:	01812403          	lw	s0,24(sp)
- 1e4:	02010113          	addi	sp,sp,32
- 1e8:	00008067          	ret
+010001b8 <_ZN4Uart9write_regEmm>:
+ 10001b8:	fe010113          	addi	sp,sp,-32
+ 10001bc:	00112e23          	sw	ra,28(sp)
+ 10001c0:	00812c23          	sw	s0,24(sp)
+ 10001c4:	02010413          	addi	s0,sp,32
+ 10001c8:	fea42623          	sw	a0,-20(s0)
+ 10001cc:	feb42423          	sw	a1,-24(s0)
+ 10001d0:	fec42223          	sw	a2,-28(s0)
+ 10001d4:	fec42783          	lw	a5,-20(s0)
+ 10001d8:	0007a703          	lw	a4,0(a5)
+ 10001dc:	fe842783          	lw	a5,-24(s0)
+ 10001e0:	00279793          	slli	a5,a5,0x2
+ 10001e4:	00f707b3          	add	a5,a4,a5
+ 10001e8:	fe442703          	lw	a4,-28(s0)
+ 10001ec:	00e7a023          	sw	a4,0(a5)
+ 10001f0:	00000013          	nop
+ 10001f4:	01c12083          	lw	ra,28(sp)
+ 10001f8:	01812403          	lw	s0,24(sp)
+ 10001fc:	02010113          	addi	sp,sp,32
+ 1000200:	00008067          	ret
 
-000001ec <_ZN4Uart8read_regEm>:
- 1ec:	fe010113          	addi	sp,sp,-32
- 1f0:	00112e23          	sw	ra,28(sp)
- 1f4:	00812c23          	sw	s0,24(sp)
- 1f8:	02010413          	addi	s0,sp,32
- 1fc:	fea42623          	sw	a0,-20(s0)
- 200:	feb42423          	sw	a1,-24(s0)
- 204:	fec42783          	lw	a5,-20(s0)
- 208:	0007a703          	lw	a4,0(a5)
- 20c:	fe842783          	lw	a5,-24(s0)
- 210:	00279793          	slli	a5,a5,0x2
- 214:	00f707b3          	add	a5,a4,a5
- 218:	0007a783          	lw	a5,0(a5)
- 21c:	00078513          	mv	a0,a5
- 220:	01c12083          	lw	ra,28(sp)
- 224:	01812403          	lw	s0,24(sp)
- 228:	02010113          	addi	sp,sp,32
- 22c:	00008067          	ret
+01000204 <_ZN4Uart8read_regEm>:
+ 1000204:	fe010113          	addi	sp,sp,-32
+ 1000208:	00112e23          	sw	ra,28(sp)
+ 100020c:	00812c23          	sw	s0,24(sp)
+ 1000210:	02010413          	addi	s0,sp,32
+ 1000214:	fea42623          	sw	a0,-20(s0)
+ 1000218:	feb42423          	sw	a1,-24(s0)
+ 100021c:	fec42783          	lw	a5,-20(s0)
+ 1000220:	0007a703          	lw	a4,0(a5)
+ 1000224:	fe842783          	lw	a5,-24(s0)
+ 1000228:	00279793          	slli	a5,a5,0x2
+ 100022c:	00f707b3          	add	a5,a4,a5
+ 1000230:	0007a783          	lw	a5,0(a5)
+ 1000234:	00078513          	mv	a0,a5
+ 1000238:	01c12083          	lw	ra,28(sp)
+ 100023c:	01812403          	lw	s0,24(sp)
+ 1000240:	02010113          	addi	sp,sp,32
+ 1000244:	00008067          	ret
 
-00000230 <_ZN4Uart4initEmm>:
- 230:	fd010113          	addi	sp,sp,-48
- 234:	02112623          	sw	ra,44(sp)
- 238:	02812423          	sw	s0,40(sp)
- 23c:	03010413          	addi	s0,sp,48
- 240:	fca42e23          	sw	a0,-36(s0)
- 244:	fcb42c23          	sw	a1,-40(s0)
- 248:	fcc42a23          	sw	a2,-44(s0)
- 24c:	fd442783          	lw	a5,-44(s0)
- 250:	00479793          	slli	a5,a5,0x4
- 254:	fd842703          	lw	a4,-40(s0)
- 258:	02f757b3          	divu	a5,a4,a5
- 25c:	fff78793          	addi	a5,a5,-1
- 260:	fef42623          	sw	a5,-20(s0)
- 264:	fec42783          	lw	a5,-20(s0)
- 268:	7ff7f793          	andi	a5,a5,2047
- 26c:	00078613          	mv	a2,a5
- 270:	00100593          	li	a1,1
- 274:	fdc42503          	lw	a0,-36(s0)
- 278:	f29ff0ef          	jal	1a0 <_ZN4Uart9write_regEmm>
- 27c:	00000013          	nop
- 280:	02c12083          	lw	ra,44(sp)
- 284:	02812403          	lw	s0,40(sp)
- 288:	03010113          	addi	sp,sp,48
- 28c:	00008067          	ret
+01000248 <_ZN4Uart4initEmm>:
+ 1000248:	fd010113          	addi	sp,sp,-48
+ 100024c:	02112623          	sw	ra,44(sp)
+ 1000250:	02812423          	sw	s0,40(sp)
+ 1000254:	03010413          	addi	s0,sp,48
+ 1000258:	fca42e23          	sw	a0,-36(s0)
+ 100025c:	fcb42c23          	sw	a1,-40(s0)
+ 1000260:	fcc42a23          	sw	a2,-44(s0)
+ 1000264:	fd442783          	lw	a5,-44(s0)
+ 1000268:	00479793          	slli	a5,a5,0x4
+ 100026c:	fd842703          	lw	a4,-40(s0)
+ 1000270:	02f757b3          	divu	a5,a4,a5
+ 1000274:	fff78793          	addi	a5,a5,-1
+ 1000278:	fef42623          	sw	a5,-20(s0)
+ 100027c:	fec42783          	lw	a5,-20(s0)
+ 1000280:	7ff7f793          	andi	a5,a5,2047
+ 1000284:	00078613          	mv	a2,a5
+ 1000288:	00100593          	li	a1,1
+ 100028c:	fdc42503          	lw	a0,-36(s0)
+ 1000290:	f29ff0ef          	jal	10001b8 <_ZN4Uart9write_regEmm>
+ 1000294:	00000013          	nop
+ 1000298:	02c12083          	lw	ra,44(sp)
+ 100029c:	02812403          	lw	s0,40(sp)
+ 10002a0:	03010113          	addi	sp,sp,48
+ 10002a4:	00008067          	ret
 
-00000290 <_ZN4Uart5writeEh>:
- 290:	fe010113          	addi	sp,sp,-32
- 294:	00112e23          	sw	ra,28(sp)
- 298:	00812c23          	sw	s0,24(sp)
- 29c:	02010413          	addi	s0,sp,32
- 2a0:	fea42623          	sw	a0,-20(s0)
- 2a4:	00058793          	mv	a5,a1
- 2a8:	fef405a3          	sb	a5,-21(s0)
- 2ac:	00000013          	nop
- 2b0:	00300593          	li	a1,3
- 2b4:	fec42503          	lw	a0,-20(s0)
- 2b8:	f35ff0ef          	jal	1ec <_ZN4Uart8read_regEm>
- 2bc:	00050793          	mv	a5,a0
- 2c0:	2007f793          	andi	a5,a5,512
- 2c4:	00f037b3          	snez	a5,a5
- 2c8:	0ff7f793          	zext.b	a5,a5
- 2cc:	fe0792e3          	bnez	a5,2b0 <_ZN4Uart5writeEh+0x20>
- 2d0:	feb44783          	lbu	a5,-21(s0)
- 2d4:	00078613          	mv	a2,a5
- 2d8:	00200593          	li	a1,2
- 2dc:	fec42503          	lw	a0,-20(s0)
- 2e0:	ec1ff0ef          	jal	1a0 <_ZN4Uart9write_regEmm>
- 2e4:	00000013          	nop
- 2e8:	01c12083          	lw	ra,28(sp)
- 2ec:	01812403          	lw	s0,24(sp)
- 2f0:	02010113          	addi	sp,sp,32
- 2f4:	00008067          	ret
+010002a8 <_ZN4Uart5writeEh>:
+ 10002a8:	fe010113          	addi	sp,sp,-32
+ 10002ac:	00112e23          	sw	ra,28(sp)
+ 10002b0:	00812c23          	sw	s0,24(sp)
+ 10002b4:	02010413          	addi	s0,sp,32
+ 10002b8:	fea42623          	sw	a0,-20(s0)
+ 10002bc:	00058793          	mv	a5,a1
+ 10002c0:	fef405a3          	sb	a5,-21(s0)
+ 10002c4:	00000013          	nop
+ 10002c8:	00300593          	li	a1,3
+ 10002cc:	fec42503          	lw	a0,-20(s0)
+ 10002d0:	f35ff0ef          	jal	1000204 <_ZN4Uart8read_regEm>
+ 10002d4:	00050793          	mv	a5,a0
+ 10002d8:	2007f793          	andi	a5,a5,512
+ 10002dc:	00f037b3          	snez	a5,a5
+ 10002e0:	0ff7f793          	zext.b	a5,a5
+ 10002e4:	fe0792e3          	bnez	a5,10002c8 <_ZN4Uart5writeEh+0x20>
+ 10002e8:	feb44783          	lbu	a5,-21(s0)
+ 10002ec:	00078613          	mv	a2,a5
+ 10002f0:	00200593          	li	a1,2
+ 10002f4:	fec42503          	lw	a0,-20(s0)
+ 10002f8:	ec1ff0ef          	jal	10001b8 <_ZN4Uart9write_regEmm>
+ 10002fc:	00000013          	nop
+ 1000300:	01c12083          	lw	ra,28(sp)
+ 1000304:	01812403          	lw	s0,24(sp)
+ 1000308:	02010113          	addi	sp,sp,32
+ 100030c:	00008067          	ret
 
-000002f8 <_ZN4Uart4readEv>:
- 2f8:	fd010113          	addi	sp,sp,-48
- 2fc:	02112623          	sw	ra,44(sp)
- 300:	02812423          	sw	s0,40(sp)
- 304:	03010413          	addi	s0,sp,48
- 308:	fca42e23          	sw	a0,-36(s0)
- 30c:	00300593          	li	a1,3
- 310:	fdc42503          	lw	a0,-36(s0)
- 314:	ed9ff0ef          	jal	1ec <_ZN4Uart8read_regEm>
- 318:	fea42623          	sw	a0,-20(s0)
- 31c:	fec42783          	lw	a5,-20(s0)
- 320:	1007f793          	andi	a5,a5,256
- 324:	00078663          	beqz	a5,330 <_ZN4Uart4readEv+0x38>
- 328:	fff00793          	li	a5,-1
- 32c:	01c0006f          	j	348 <_ZN4Uart4readEv+0x50>
- 330:	fec42783          	lw	a5,-20(s0)
- 334:	01079793          	slli	a5,a5,0x10
- 338:	4107d793          	srai	a5,a5,0x10
- 33c:	0ff7f793          	zext.b	a5,a5
- 340:	01079793          	slli	a5,a5,0x10
- 344:	4107d793          	srai	a5,a5,0x10
- 348:	00078513          	mv	a0,a5
- 34c:	02c12083          	lw	ra,44(sp)
- 350:	02812403          	lw	s0,40(sp)
- 354:	03010113          	addi	sp,sp,48
- 358:	00008067          	ret
+01000310 <_ZN4Uart4readEv>:
+ 1000310:	fd010113          	addi	sp,sp,-48
+ 1000314:	02112623          	sw	ra,44(sp)
+ 1000318:	02812423          	sw	s0,40(sp)
+ 100031c:	03010413          	addi	s0,sp,48
+ 1000320:	fca42e23          	sw	a0,-36(s0)
+ 1000324:	00300593          	li	a1,3
+ 1000328:	fdc42503          	lw	a0,-36(s0)
+ 100032c:	ed9ff0ef          	jal	1000204 <_ZN4Uart8read_regEm>
+ 1000330:	fea42623          	sw	a0,-20(s0)
+ 1000334:	fec42783          	lw	a5,-20(s0)
+ 1000338:	1007f793          	andi	a5,a5,256
+ 100033c:	00078663          	beqz	a5,1000348 <_ZN4Uart4readEv+0x38>
+ 1000340:	fff00793          	li	a5,-1
+ 1000344:	01c0006f          	j	1000360 <_ZN4Uart4readEv+0x50>
+ 1000348:	fec42783          	lw	a5,-20(s0)
+ 100034c:	01079793          	slli	a5,a5,0x10
+ 1000350:	4107d793          	srai	a5,a5,0x10
+ 1000354:	0ff7f793          	zext.b	a5,a5
+ 1000358:	01079793          	slli	a5,a5,0x10
+ 100035c:	4107d793          	srai	a5,a5,0x10
+ 1000360:	00078513          	mv	a0,a5
+ 1000364:	02c12083          	lw	ra,44(sp)
+ 1000368:	02812403          	lw	s0,40(sp)
+ 100036c:	03010113          	addi	sp,sp,48
+ 1000370:	00008067          	ret
 
-0000035c <_ZN4Uart10is_tx_fullEv>:
- 35c:	fe010113          	addi	sp,sp,-32
- 360:	00112e23          	sw	ra,28(sp)
- 364:	00812c23          	sw	s0,24(sp)
- 368:	02010413          	addi	s0,sp,32
- 36c:	fea42623          	sw	a0,-20(s0)
- 370:	00300593          	li	a1,3
- 374:	fec42503          	lw	a0,-20(s0)
- 378:	e75ff0ef          	jal	1ec <_ZN4Uart8read_regEm>
- 37c:	00050793          	mv	a5,a0
- 380:	2007f793          	andi	a5,a5,512
- 384:	00f037b3          	snez	a5,a5
- 388:	0ff7f793          	zext.b	a5,a5
- 38c:	00078513          	mv	a0,a5
- 390:	01c12083          	lw	ra,28(sp)
- 394:	01812403          	lw	s0,24(sp)
- 398:	02010113          	addi	sp,sp,32
- 39c:	00008067          	ret
+01000374 <_ZN4Uart10is_tx_fullEv>:
+ 1000374:	fe010113          	addi	sp,sp,-32
+ 1000378:	00112e23          	sw	ra,28(sp)
+ 100037c:	00812c23          	sw	s0,24(sp)
+ 1000380:	02010413          	addi	s0,sp,32
+ 1000384:	fea42623          	sw	a0,-20(s0)
+ 1000388:	00300593          	li	a1,3
+ 100038c:	fec42503          	lw	a0,-20(s0)
+ 1000390:	e75ff0ef          	jal	1000204 <_ZN4Uart8read_regEm>
+ 1000394:	00050793          	mv	a5,a0
+ 1000398:	2007f793          	andi	a5,a5,512
+ 100039c:	00f037b3          	snez	a5,a5
+ 10003a0:	0ff7f793          	zext.b	a5,a5
+ 10003a4:	00078513          	mv	a0,a5
+ 10003a8:	01c12083          	lw	ra,28(sp)
+ 10003ac:	01812403          	lw	s0,24(sp)
+ 10003b0:	02010113          	addi	sp,sp,32
+ 10003b4:	00008067          	ret
 
-000003a0 <_ZN4Uart11is_rx_emptyEv>:
- 3a0:	fe010113          	addi	sp,sp,-32
- 3a4:	00112e23          	sw	ra,28(sp)
- 3a8:	00812c23          	sw	s0,24(sp)
- 3ac:	02010413          	addi	s0,sp,32
- 3b0:	fea42623          	sw	a0,-20(s0)
- 3b4:	00300593          	li	a1,3
- 3b8:	fec42503          	lw	a0,-20(s0)
- 3bc:	e31ff0ef          	jal	1ec <_ZN4Uart8read_regEm>
- 3c0:	00050793          	mv	a5,a0
- 3c4:	1007f793          	andi	a5,a5,256
- 3c8:	00f037b3          	snez	a5,a5
- 3cc:	0ff7f793          	zext.b	a5,a5
- 3d0:	00078513          	mv	a0,a5
- 3d4:	01c12083          	lw	ra,28(sp)
- 3d8:	01812403          	lw	s0,24(sp)
- 3dc:	02010113          	addi	sp,sp,32
- 3e0:	00008067          	ret
+010003b8 <_ZN4Uart11is_rx_emptyEv>:
+ 10003b8:	fe010113          	addi	sp,sp,-32
+ 10003bc:	00112e23          	sw	ra,28(sp)
+ 10003c0:	00812c23          	sw	s0,24(sp)
+ 10003c4:	02010413          	addi	s0,sp,32
+ 10003c8:	fea42623          	sw	a0,-20(s0)
+ 10003cc:	00300593          	li	a1,3
+ 10003d0:	fec42503          	lw	a0,-20(s0)
+ 10003d4:	e31ff0ef          	jal	1000204 <_ZN4Uart8read_regEm>
+ 10003d8:	00050793          	mv	a5,a0
+ 10003dc:	1007f793          	andi	a5,a5,256
+ 10003e0:	00f037b3          	snez	a5,a5
+ 10003e4:	0ff7f793          	zext.b	a5,a5
+ 10003e8:	00078513          	mv	a0,a5
+ 10003ec:	01c12083          	lw	ra,28(sp)
+ 10003f0:	01812403          	lw	s0,24(sp)
+ 10003f4:	02010113          	addi	sp,sp,32
+ 10003f8:	00008067          	ret
 
-000003e4 <_ZN4Uart12write_stringEPKc>:
- 3e4:	fe010113          	addi	sp,sp,-32
- 3e8:	00112e23          	sw	ra,28(sp)
- 3ec:	00812c23          	sw	s0,24(sp)
- 3f0:	02010413          	addi	s0,sp,32
- 3f4:	fea42623          	sw	a0,-20(s0)
- 3f8:	feb42423          	sw	a1,-24(s0)
- 3fc:	0200006f          	j	41c <_ZN4Uart12write_stringEPKc+0x38>
- 400:	fe842783          	lw	a5,-24(s0)
- 404:	00178713          	addi	a4,a5,1
- 408:	fee42423          	sw	a4,-24(s0)
- 40c:	0007c783          	lbu	a5,0(a5)
- 410:	00078593          	mv	a1,a5
- 414:	fec42503          	lw	a0,-20(s0)
- 418:	e79ff0ef          	jal	290 <_ZN4Uart5writeEh>
- 41c:	fe842783          	lw	a5,-24(s0)
- 420:	0007c783          	lbu	a5,0(a5)
- 424:	fc079ee3          	bnez	a5,400 <_ZN4Uart12write_stringEPKc+0x1c>
- 428:	00000013          	nop
- 42c:	00000013          	nop
- 430:	01c12083          	lw	ra,28(sp)
- 434:	01812403          	lw	s0,24(sp)
- 438:	02010113          	addi	sp,sp,32
- 43c:	00008067          	ret
+010003fc <_ZN4Uart12write_stringEPKc>:
+ 10003fc:	fe010113          	addi	sp,sp,-32
+ 1000400:	00112e23          	sw	ra,28(sp)
+ 1000404:	00812c23          	sw	s0,24(sp)
+ 1000408:	02010413          	addi	s0,sp,32
+ 100040c:	fea42623          	sw	a0,-20(s0)
+ 1000410:	feb42423          	sw	a1,-24(s0)
+ 1000414:	0200006f          	j	1000434 <_ZN4Uart12write_stringEPKc+0x38>
+ 1000418:	fe842783          	lw	a5,-24(s0)
+ 100041c:	00178713          	addi	a4,a5,1
+ 1000420:	fee42423          	sw	a4,-24(s0)
+ 1000424:	0007c783          	lbu	a5,0(a5)
+ 1000428:	00078593          	mv	a1,a5
+ 100042c:	fec42503          	lw	a0,-20(s0)
+ 1000430:	e79ff0ef          	jal	10002a8 <_ZN4Uart5writeEh>
+ 1000434:	fe842783          	lw	a5,-24(s0)
+ 1000438:	0007c783          	lbu	a5,0(a5)
+ 100043c:	fc079ee3          	bnez	a5,1000418 <_ZN4Uart12write_stringEPKc+0x1c>
+ 1000440:	00000013          	nop
+ 1000444:	00000013          	nop
+ 1000448:	01c12083          	lw	ra,28(sp)
+ 100044c:	01812403          	lw	s0,24(sp)
+ 1000450:	02010113          	addi	sp,sp,32
+ 1000454:	00008067          	ret
+ 1000458:	6978                	.insn	2, 0x6978
+ 100045a:	206e                	.insn	2, 0x206e
+ 100045c:	6f616863          	bltu	sp,s6,1000b4c <_etext+0x6e4>
+ 1000460:	0a20                	.insn	2, 0x0a20
+	...
+
+01000463 <_ZNSt8__detail30__integer_to_chars_is_unsignedIjEE>:
+ 1000463:	                                             .
+
+01000464 <_ZNSt8__detail30__integer_to_chars_is_unsignedImEE>:
+ 1000464:	                                             .
+
+01000465 <_ZNSt8__detail30__integer_to_chars_is_unsignedIyEE>:
+ 1000465:	0001                                         ...
