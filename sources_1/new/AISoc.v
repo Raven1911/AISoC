@@ -20,19 +20,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module AISoc(
+module AISoc#()(
     input clk,
     input resetn,
     output trap,
 
-    //gpio uart0
+    //port uart0
     input  wire rx0,
-    output wire tx0
-    
+    output wire tx0,
+
+    //port spi0
+    output                          spi0_clk,
+    output                          spi0_mosi,
+    input                           spi0_miso,
+    output     [1:0]                spi0_ss_n
 
     );
     //config axi interconnect
-    parameter NUM_SLAVES = 3;
+    parameter NUM_SLAVES = 4;
 
     //config cpu
     parameter [ 0:0] ENABLE_COUNTERS = 1;
@@ -66,6 +71,9 @@ module AISoc(
     parameter D_MEM_SIZE = 16384; // 16KB SRAM
     parameter ADDR_WIDTH = 32;
     parameter DATA_WIDTH = 32;
+
+    //config spi
+    parameter NSlave = 2;
 
     // AXI signals from picorv32_axi
     wire        cpu_awvalid, cpu_awready;
@@ -124,6 +132,19 @@ module AISoc(
     wire [ 2:0] uart0_arprot;
     wire        uart0_rvalid, uart0_rready;
     wire [31:0] uart0_rdata;
+
+    // AXI signals to spi0_axi_lite//////////////////slave 3/////////////////////
+    wire        spi0_awvalid, spi0_awready;
+    wire [ 2:0] spi0_awprot;
+    wire        spi0_wvalid, spi0_wready;
+    wire [31:0] spi0_wdata;
+    wire [ 3:0] spi0_wstrb;
+    wire        spi0_bvalid, spi0_bready;
+    wire        spi0_arvalid, spi0_arready;
+    //wire [31:0] spi0_araddr;
+    wire [ 2:0] spi0_arprot;
+    wire        spi0_rvalid, spi0_rready;
+    wire [31:0] spi0_rdata;
 
     // Instantiate picorv32_axi
     picorv32_axi #(
@@ -209,22 +230,22 @@ module AISoc(
 
         // Slave Interfaces [2: uart0, 1: imem, 0: dmem]
         .o_s_axi_awaddr(s_mem_awaddr),
-        .o_s_axi_awvalid({uart0_awvalid, imem_awvalid, dmem_awvalid}),
-        .i_s_axi_awready({uart0_awready, imem_awready, dmem_awready}),
-        .o_s_axi_awprot({uart0_awprot, imem_awprot, dmem_awprot}),
-        .o_s_axi_wdata({uart0_wdata, imem_wdata, dmem_wdata}),
-        .o_s_axi_wstrb({uart0_wstrb, imem_wstrb, dmem_wstrb}),
-        .o_s_axi_wvalid({uart0_wvalid, imem_wvalid, dmem_wvalid}),
-        .i_s_axi_wready({uart0_wready, imem_wready, dmem_wready}),
-        .i_s_axi_bvalid({uart0_bvalid, imem_bvalid, dmem_bvalid}),
-        .o_s_axi_bready({uart0_bready, imem_bready, dmem_bready}),
+        .o_s_axi_awvalid({spi0_awvalid, uart0_awvalid, imem_awvalid, dmem_awvalid}),
+        .i_s_axi_awready({spi0_awready, uart0_awready, imem_awready, dmem_awready}),
+        .o_s_axi_awprot({spi0_awprot, uart0_awprot, imem_awprot, dmem_awprot}),
+        .o_s_axi_wdata({spi0_wdata, uart0_wdata, imem_wdata, dmem_wdata}),
+        .o_s_axi_wstrb({spi0_wstrb, uart0_wstrb, imem_wstrb, dmem_wstrb}),
+        .o_s_axi_wvalid({spi0_wvalid, uart0_wvalid, imem_wvalid, dmem_wvalid}),
+        .i_s_axi_wready({spi0_wready, uart0_wready, imem_wready, dmem_wready}),
+        .i_s_axi_bvalid({spi0_bvalid, uart0_bvalid, imem_bvalid, dmem_bvalid}),
+        .o_s_axi_bready({spi0_bready, uart0_bready, imem_bready, dmem_bready}),
         .o_s_axi_araddr(s_mem_araddr),
-        .o_s_axi_arvalid({uart0_arvalid, imem_arvalid, dmem_arvalid}),
-        .i_s_axi_arready({uart0_arready, imem_arready, dmem_arready}),
-        .o_s_axi_arprot({uart0_arprot, imem_arprot, dmem_arprot}),
-        .i_s_axi_rdata({uart0_rdata, imem_rdata, dmem_rdata}),
-        .i_s_axi_rvalid({uart0_rvalid, imem_rvalid, dmem_rvalid}),
-        .o_s_axi_rready({uart0_rready, imem_rready, dmem_rready})
+        .o_s_axi_arvalid({spi0_arvalid, uart0_arvalid, imem_arvalid, dmem_arvalid}),
+        .i_s_axi_arready({spi0_arready, uart0_arready, imem_arready, dmem_arready}),
+        .o_s_axi_arprot({spi0_arprot, uart0_arprot, imem_arprot, dmem_arprot}),
+        .i_s_axi_rdata({spi0_rdata, uart0_rdata, imem_rdata, dmem_rdata}),
+        .i_s_axi_rvalid({spi0_rvalid, uart0_rvalid, imem_rvalid, dmem_rvalid}),
+        .o_s_axi_rready({spi0_rready, uart0_rready, imem_rready, dmem_rready})
     );
 
 
@@ -300,6 +321,36 @@ module AISoc(
 
         .tx(tx0),
         .rx(rx0)
+    );
+
+    // Instantiate Spi0_axi_lite (Slave 3)
+    Spi_axi_lite_core #(
+        .NSlave(NSlave),
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) spi0 (
+        .clk(clk),
+        .resetn(resetn),
+        .i_axi_awvalid(spi0_awvalid),
+        .o_axi_awready(spi0_awready),
+        .i_axi_awaddr(s_mem_awaddr),
+        .i_axi_wvalid(spi0_wvalid),
+        .o_axi_wready(spi0_wready),
+        .i_axi_wdata(spi0_wdata),
+        .i_axi_wstrb(spi0_wstrb),
+        .o_axi_bvalid(spi0_bvalid),
+        .i_axi_bready(spi0_bready),
+        .i_axi_arvalid(spi0_arvalid),
+        .o_axi_arready(spi0_arready),
+        .i_axi_araddr(s_mem_araddr),
+        .o_axi_rvalid(spi0_rvalid),
+        .i_axi_rready(spi0_rready),
+        .o_axi_rdata(spi0_rdata),
+
+        .spi_clk(spi0_clk),
+        .spi_mosi(spi0_mosi),
+        .spi_miso(spi0_miso),
+        .spi_ss_n(spi0_ss_n)
     );
 
 endmodule

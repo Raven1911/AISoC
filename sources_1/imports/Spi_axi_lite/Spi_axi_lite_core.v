@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 04/03/2025 01:41:04 PM
+// Create Date: 04/22/2025 03:35:24 PM
 // Design Name: 
-// Module Name: uart_axi_lite
+// Module Name: Spi_axi_lite_core
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,15 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module uart_axi_lite#(
+module Spi_axi_lite_core#(
+    parameter NSlave = 2,
     parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32,
-    parameter FIFO_DEPTH_BIT = 8 // bit address fifo
+    parameter DATA_WIDTH = 32
 )(
-
     input clk,
     input resetn,
 
+    //axi lite interface
     //AXI-Lite Write Address Channels
     input [ADDR_WIDTH-1:0]          i_axi_awaddr,
     input                           i_axi_awvalid,
@@ -54,11 +54,14 @@ module uart_axi_lite#(
     output wire                     o_axi_rvalid,
     input                           i_axi_rready,
 
-    //RX TX
-    output      tx,
-    input       rx
+    //external logic
+    output                          spi_clk,
+    output                          spi_mosi,
+    input                           spi_miso,
+    output reg [NSlave-1:0]         spi_ss_n
     );
 
+    
     //signals to connect
     //wire [3:0] o_wen;
     wire [ADDR_WIDTH-1:0] o_addr_w;
@@ -70,57 +73,67 @@ module uart_axi_lite#(
     wire o_valid_r;
 
 
+    //
+    wire rd_spi, wr_ss, wr_spi, wr_ctrl;
+    //reg [17:0] ctrl_reg;
+    //reg [NSlave-1:0] ss_n_reg;
+    wire [7:0] spi_out;
+    wire spi_ready;
+    reg cpol, cpha;
+    reg [15:0] dvsr;
 
- 
-    //signals register uart
-    wire            wr_uart, rd_uart, wr_dvsr;
-    wire            tx_full, rx_empty;
-    reg     [10:0]  dvsr_reg;
-    wire    [7:0]   r_data;
 
-    //body////////////////////////////////////////////
-
-    always @(posedge clk or negedge resetn) begin
-        if(~resetn) dvsr_reg <= 0;
-        else begin
-            if (wr_dvsr) begin
-               dvsr_reg <= o_data_w[10:0];
-            end
+    //seq
+    always @(posedge clk, negedge resetn) begin
+        if(~resetn) begin
+            {cpha, cpol, dvsr} <= 17'h0_0200;
+            spi_ss_n <= {NSlave{1'b1}};
         end
-        
+
+        else begin
+            if (wr_ctrl) begin
+                //ctrl_reg <=  o_data_w[17:0];
+                dvsr = o_data_w[15:0];
+                cpol = o_data_w[16];
+                cpha = o_data_w[17];
+            end    
+            
+            if (wr_ss)  spi_ss_n <=  o_data_w[NSlave-1:0];
+            //if (rd_spi) i_data_r <= {23'b0, spi_ready, spi_out};
+        end
     end
 
-    //decoding logic
-    assign wr_dvsr = (o_valid_w && (o_addr_w == 32'h0200_2004)) ? 1 : 0;
-    assign wr_uart = (o_valid_w && (o_addr_w == 32'h0200_2008)) ? 1 : 0;
-    assign rd_uart = (o_valid_r && (o_addr_r == 32'h0200_200C)) ? 1 : 0;
+    //decoding
+    assign rd_spi   = (o_valid_r && (o_addr_r[31:0] == 32'h0200_3000)) ? 1 : 0;
+    assign wr_ss    = (o_valid_w && (o_addr_w[31:0] == 32'h0200_3004)) ? 1 : 0;
+    assign wr_spi   = (o_valid_w && (o_addr_w[31:0] == 32'h0200_3008)) ? 1 : 0;
+    assign wr_ctrl  = (o_valid_w && (o_addr_w[31:0] == 32'h0200_300C)) ? 1 : 0;
 
-    //slot read
-    assign i_data_r = {22'h00000, tx_full, rx_empty, r_data};
+    //read multiplexing
+    assign i_data_r = {23'b0, spi_ready, spi_out};
 
-    uart_unit
-    #(              .DBIT('d8),       // databit
-                    .SB_TICK('d16),   // tick for stop bits
-                    .FIFO_W(FIFO_DEPTH_BIT)      // addr bits of FIFO
-    ) 
-    uart0(
+    Spi #(.DATA_WITH(8)) Spi_unit
+    (
         .clk(clk),
-        .reset_n(resetn),
-        .rd_uart(rd_uart),
-        .wr_uart(wr_uart),
-        .rx(rx),
-        .w_data(o_data_w[7:0]),
-        .dvsr(dvsr_reg),
-        .tx_full(tx_full),
-        .rx_empty(rx_empty),
-        .tx(tx),
-        .r_data(r_data)
+        .resetn(resetn),
+        .din(o_data_w[7:0]),
+        .dvsr(dvsr), //0.5*(# clk in SCK period)
+        .start(wr_spi),
+        .cpol(cpol),
+        .cpha(cpha),
+        .dout(spi_out),
+        .spi_done_tick(),
+        .ready(spi_ready),
+
+        //spi interface
+        .sclk(spi_clk),
+        .miso(spi_miso),
+        .mosi(spi_mosi)    
+
     );
 
-    
-
     // Instantiate axi interface module
-    axi_lite_interface #(
+    axi_lite_interface_spi #(
         .ADDR_WIDTH(ADDR_WIDTH),
         .DATA_WIDTH(DATA_WIDTH)
     ) axi_adapter(
@@ -150,10 +163,10 @@ module uart_axi_lite#(
         //AXI4-Lite Read Data Channel
         .o_axi_rdata(o_axi_rdata),
         .o_axi_rvalid(o_axi_rvalid),
-        .i_axi_rready(i_axi_rready),
+        .i_axi_rready(i_axi_rready),    
 
         //channel for slave
-        //.o_wen(o_wen),
+        .o_wen(),
         .o_addr_w(o_addr_w),
         .o_addr_r(o_addr_r),             
         .o_data_w(o_data_w),
@@ -162,6 +175,8 @@ module uart_axi_lite#(
         .o_valid_r(o_valid_r)
     );
 
+
+    
 
 
 

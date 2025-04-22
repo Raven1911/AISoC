@@ -10,7 +10,7 @@ Disassembly of section .text:
  1000008:	00812c23          	sw	s0,24(sp)
  100000c:	02010413          	addi	s0,sp,32
  1000010:	fe440793          	addi	a5,s0,-28
- 1000014:	020005b7          	lui	a1,0x2000
+ 1000014:	020025b7          	lui	a1,0x2002
  1000018:	00078513          	mv	a0,a5
  100001c:	164000ef          	jal	1000180 <_ZN4UartC1Em>
  1000020:	fe440713          	addi	a4,s0,-28

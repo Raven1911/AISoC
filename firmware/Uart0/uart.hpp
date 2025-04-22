@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 // Địa chỉ cơ sở của UART
-#define UART_BASE_ADDR 0x02000000
+#define UART_BASE_ADDR 0x02002000
 #define UART_DVSR_REG   (UART_BASE_ADDR + 0x00000001)  // WRITE    //Thanh ghi baud rate
 #define UART_TX_REG     (UART_BASE_ADDR + 0x00000002)  // WRITE    //Thanh ghi truyền
 #define UART_RX_REG     (UART_BASE_ADDR + 0x00000003)  // READ     //Thanh ghi nhận và trạng thái

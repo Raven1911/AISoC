@@ -24,7 +24,7 @@
  * AXI4-Lite Interconnect for picorv32_axi (1 Master, Multiple Slaves)
  ***************************************************************/
 module axi_lite_interconnect #(
-    parameter NUM_SLAVES = 3,
+    parameter NUM_SLAVES = 4,
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32
 )(
@@ -140,7 +140,7 @@ endmodule
  * AXI4-Lite Decoder
  ***************************************************************/
 module axi_lite_decoder #(
-    parameter NUM_SLAVES = 3,
+    parameter NUM_SLAVES = 4,
     parameter ADDR_WIDTH = 32
 )(  
     //input                       clk,
@@ -160,18 +160,20 @@ module axi_lite_decoder #(
         else begin
             // Write channel decoder
             casex (i_axi_awaddr)
-                'h00xx_xxxx: o_slave_select_write <= 'b001;  // Slave 0
-                //'h01xx_xxxx: o_slave_select_write <= 'b010;  // Slave 1
-                'h02xx_xxxx: o_slave_select_write <= 'b100;  // Slave 2
-                default:     o_slave_select_write <= 'b000;  // No slave selected
+                'h00xx_xxxx: o_slave_select_write <= 'b0001;  // Slave 0
+                //'h01xx_xxxx: o_slave_select_write <= 'b0010;  // Slave 1
+                'h0200_2xxx: o_slave_select_write <= 'b0100;  // Slave 2
+                'h0200_3xxx: o_slave_select_write <= 'b1000;  // Slave 3
+                default:     o_slave_select_write <= 'b0000;  // No slave selected
             endcase
 
             // Read channel decoder
             casex (i_axi_araddr)
-                'h00xx_xxxx: o_slave_select_read <= 'b001;  // Slave 0
-                'h01xx_xxxx: o_slave_select_read <= 'b010;  // Slave 1
-                'h02xx_xxxx: o_slave_select_read <= 'b100;  // Slave 2
-                default:     o_slave_select_read <= 'b000;  // No slave selected
+                'h00xx_xxxx: o_slave_select_read <= 'b0001;  // Slave 0
+                'h01xx_xxxx: o_slave_select_read <= 'b0010;  // Slave 1
+                'h0200_2xxx: o_slave_select_read <= 'b0100;  // Slave 2
+                'h0200_3xxx: o_slave_select_read <= 'b1000;  // Slave 3
+                default:     o_slave_select_read <= 'b0000;  // No slave selected
             endcase
         end
     end
@@ -187,7 +189,7 @@ endmodule
  * AXI4-Lite Multiplexer
  ***************************************************************/
 module axi_lite_mux #(
-    parameter NUM_SLAVES = 3,
+    parameter NUM_SLAVES = 4,
     parameter DATA_WIDTH = 32
 )(
     // Master Interface (from picorv32_axi)
@@ -291,7 +293,8 @@ module axi_lite_mux #(
 
     assign o_m_axi_awready = i_slave_select_write[0] ? i_s_axi_awready[0] : 
                              i_slave_select_write[1] ? i_s_axi_awready[1] :
-                             i_slave_select_write[2] ? i_s_axi_awready[2] : 0;
+                             i_slave_select_write[2] ? i_s_axi_awready[2] :
+                             i_slave_select_write[3] ? i_s_axi_awready[3] : 0;
 
     // Write Data Channel
     generate
@@ -309,12 +312,14 @@ module axi_lite_mux #(
 
     assign o_m_axi_wready = i_slave_select_write[0] ? i_s_axi_wready[0] : 
                             i_slave_select_write[1] ? i_s_axi_wready[1] :
-                            i_slave_select_write[2] ? i_s_axi_wready[2] : 0;
+                            i_slave_select_write[2] ? i_s_axi_wready[2] :
+                            i_slave_select_write[3] ? i_s_axi_wready[3] : 0;
 
     // Write Response Channel
     assign o_m_axi_bvalid = i_slave_select_write[0] ? i_s_axi_bvalid[0] :
                             i_slave_select_write[1] ? i_s_axi_bvalid[1] :
-                            i_slave_select_write[2] ? i_s_axi_bvalid[2] : 0;
+                            i_slave_select_write[2] ? i_s_axi_bvalid[2] :
+                            i_slave_select_write[3] ? i_s_axi_bvalid[3] : 0;
 
     generate
         for (genvar i = 0; i < NUM_SLAVES; i = i + 1) begin : bready_loop
@@ -331,16 +336,19 @@ module axi_lite_mux #(
 
     assign o_m_axi_arready = i_slave_select_read[0] ? i_s_axi_arready[0] : 
                              i_slave_select_read[1] ? i_s_axi_arready[1] :
-                             i_slave_select_read[2] ? i_s_axi_arready[2] : 0;
+                             i_slave_select_read[2] ? i_s_axi_arready[2] :
+                             i_slave_select_read[3] ? i_s_axi_arready[3] : 0;
 
     // Read Data Channel
     assign o_m_axi_rdata = i_slave_select_read[0] ? i_s_axi_rdata[0] :
                            i_slave_select_read[1] ? i_s_axi_rdata[1] :
-                           i_slave_select_read[2] ? i_s_axi_rdata[2] : 0;
+                           i_slave_select_read[2] ? i_s_axi_rdata[2] :
+                           i_slave_select_read[3] ? i_s_axi_rdata[3] : 0;
 
     assign o_m_axi_rvalid = i_slave_select_read[0] ? i_s_axi_rvalid[0] : 
                             i_slave_select_read[1] ? i_s_axi_rvalid[1] :
-                            i_slave_select_read[2] ? i_s_axi_rvalid[2] : 0;
+                            i_slave_select_read[2] ? i_s_axi_rvalid[2] :
+                            i_slave_select_read[3] ? i_s_axi_rvalid[3] : 0;
 
     generate
         for (genvar i = 0; i < NUM_SLAVES; i = i + 1) begin : rready_loop

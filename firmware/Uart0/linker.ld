@@ -3,7 +3,7 @@ OUTPUT_FORMAT("elf32-littleriscv")
 MEMORY {
     RAM (xrw)       : ORIGIN = 0x00000000, LENGTH = 0x00004000
     FLASH (rx)      : ORIGIN = 0x01000000, LENGTH = 0x00004000 /* entire flash, 4 MiB */
-    PERIPH          : ORIGIN = 0x02000000, LENGTH = 0x00001000
+    /*PERIPH          : ORIGIN = 0x02000000, LENGTH = 0x00010000 */
 }
 
 SECTIONS {
